@@ -1,0 +1,46 @@
+﻿<Window x:Class="_2dStructuralFEM_GUI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:oxy="http://oxyplot.org/wpf"
+        mc:Ignorable="d"
+        Title="2dStructuralFEM" Height="450" Width="800"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="ThreeDBorderWindow">
+
+    <Viewbox StretchDirection="Both" Stretch="Uniform">
+        <Grid>
+            <DockPanel>
+                <Menu DockPanel.Dock="Top">
+                <MenuItem Header="File">
+                    <MenuItem Header="Import ..." Click="MenuItem_Click">
+                    </MenuItem>
+                </MenuItem>
+            </Menu>
+            <StackPanel Orientation="Vertical"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Bottom"  Margin="50,0,50,0.5" Height="400" Width="700">
+                <oxy:PlotView Height="300"
+                      Width="700"
+                      x:Name="plot"
+                      BorderBrush="Black"
+                      BorderThickness="1"
+                      Visibility="Hidden"
+                      Padding="1">
+                </oxy:PlotView>
+                    <Button x:Name="button"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Bottom"
+                    Content="Solve"
+                    Padding="5"
+                    Margin="330,5"
+                    Visibility="Hidden" Click="button_Click"/>
+
+                    <TextBlock VerticalAlignment="Bottom" x:Name="calculating_text" FontSize="10" Visibility="Hidden">Calculating ...</TextBlock>
+
+            </StackPanel>
+            </DockPanel>
+        </Grid>
+    </Viewbox>
+</Window>
