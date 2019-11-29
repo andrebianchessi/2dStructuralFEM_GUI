@@ -13,33 +13,32 @@
         <Grid>
             <DockPanel>
                 <Menu DockPanel.Dock="Top">
-                <MenuItem Header="File">
-                    <MenuItem Header="Import ..." Click="MenuItem_Click">
+                    <MenuItem Header="File">
+                        <MenuItem Header="Import ..." Click="MenuItem_Click">
+                        </MenuItem>
                     </MenuItem>
-                </MenuItem>
-            </Menu>
-            <StackPanel Orientation="Vertical"
+                </Menu>
+                <StackPanel Orientation="Vertical"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Bottom"  Margin="50,0,50,0.5" Height="400" Width="700">
-                <oxy:PlotView Height="300"
+                    <oxy:PlotView Height="300"
                       Width="700"
                       x:Name="plot"
                       BorderBrush="Black"
                       BorderThickness="1"
-                      Visibility="Hidden"
-                      Padding="1">
-                </oxy:PlotView>
+                      Visibility="Hidden">
+                    </oxy:PlotView>
                     <Button x:Name="button"
-                    HorizontalAlignment="Center"
+                    HorizontalAlignment="Right"
                     VerticalAlignment="Bottom"
                     Content="Solve"
                     Padding="5"
-                    Margin="330,5"
+                    Margin="0,5,330,50"
                     Visibility="Hidden" Click="button_Click"/>
 
-                    <TextBlock VerticalAlignment="Bottom" x:Name="calculating_text" FontSize="10" Visibility="Hidden">Calculating ...</TextBlock>
+                    <TextBlock VerticalAlignment="Bottom" x:Name="calculating_text" FontSize="15" Visibility="Collapsed">Calculating ...</TextBlock>
 
-            </StackPanel>
+                </StackPanel>
             </DockPanel>
         </Grid>
     </Viewbox>

@@ -34,6 +34,16 @@ namespace _2dStructuralFEM_GUI {
             this.p = new Problem();
             this.plot.Model = new PlotModel(){ PlotType = PlotType.Cartesian }; ;
             this.plotModel = this.plot.Model;
+
+            plotModel.Axes.Add(new LinearAxis() {
+                Position = AxisPosition.Bottom,
+                //IsAxisVisible = false
+            });
+
+            plotModel.Axes.Add(new LinearAxis() {
+                Position = AxisPosition.Left,
+                //IsAxisVisible = false
+            });
         }
 
         public void addLine(double x1, double y1, double x2, double y2, OxyColor color) {
@@ -97,6 +107,40 @@ namespace _2dStructuralFEM_GUI {
             // add BC
             addBCs();
 
+            double xmin, xmax, ymin, ymax;
+            xmin = Node.all[0].x;
+            xmax = Node.all[0].x;
+            ymin = Node.all[0].y;
+            ymax = Node.all[0].y;
+
+            for(int i=0; i<Node.all.Count; i++) {
+                if (Node.all[i].x < xmin) {
+                    xmin = Node.all[i].x;
+                }
+                if (Node.all[i].x > xmax) {
+                    xmax = Node.all[i].x;
+                }
+                if (Node.all[i].y < ymin) {
+                    ymin = Node.all[i].y;
+                }
+                if (Node.all[i].y > ymax) {
+                    ymax = Node.all[i].y;
+                }
+            }
+
+            Console.WriteLine(xmin.ToString());
+            Console.WriteLine(xmax.ToString());
+            Console.WriteLine(ymin.ToString());
+            Console.WriteLine(ymax.ToString());
+
+            this.plotModel.Axes[0].Reset();
+            this.plotModel.Axes[1].Reset();
+
+            this.plotModel.Axes[0].Maximum = xmax+2;
+            this.plotModel.Axes[0].Minimum = xmin-2;
+            this.plotModel.Axes[1].Maximum = ymax+2;
+            this.plotModel.Axes[1].Minimum = ymin-2;
+
             this.plotModel.InvalidatePlot(true); // refresh
         }   
 
@@ -109,7 +153,7 @@ namespace _2dStructuralFEM_GUI {
             this.p.postProcess();
 
             // add lines
-            int f = 1;// increase displacement factor
+            int f = 10;// increase displacement factor
             for (int i = 0; i < Element.all.Count; i++) {
                 addLine(Element.all[i].node1.x+p.solution.getNodeGlobalDisplacement(Element.all[i].node1,'x')*f,
                         Element.all[i].node1.y + p.solution.getNodeGlobalDisplacement(Element.all[i].node1, 'y') * f,
@@ -118,7 +162,9 @@ namespace _2dStructuralFEM_GUI {
             }
             this.plotModel.InvalidatePlot(true); // refresh
 
-            this.calculating_text.Text = "Done!";
+            this.button.Visibility = Visibility.Collapsed;
+            this.calculating_text.Visibility = Visibility.Visible;
+            this.calculating_text.Text = "Done!\nFinal structure configuration in red\n(displacements multiplied by 10)";
 
             resultsWindow resultsWindowObj = new resultsWindow();
 
