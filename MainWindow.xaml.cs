@@ -32,12 +32,13 @@ namespace _2dStructuralFEM_GUI {
     public MainWindow() {
             InitializeComponent();
             this.p = new Problem();
-            this.plot.Model = new PlotModel();
+            this.plot.Model = new PlotModel(){ PlotType = PlotType.Cartesian }; ;
             this.plotModel = this.plot.Model;
         }
 
-        public void addLine(double x1, double y1, double x2, double y2) {
-            var series1 = new LineSeries();
+        public void addLine(double x1, double y1, double x2, double y2, OxyColor color) {
+            LineSeries series1 = null;
+            series1 = new LineSeries { Color = color };
             series1.Points.Add(new DataPoint(x1, y1));
             series1.Points.Add(new DataPoint(x2, y2));
             plotModel.Series.Add(series1);
@@ -74,6 +75,7 @@ namespace _2dStructuralFEM_GUI {
                 this.plotModel.Annotations.Add(textAnnotation);
             }
         }
+        
 
         private void MenuItem_Click(object sender, RoutedEventArgs e) {
             // Import input
@@ -89,7 +91,7 @@ namespace _2dStructuralFEM_GUI {
 
             // add lines
             for (int i=0; i<Element.all.Count; i++) {
-                addLine(Element.all[i].node1.x, Element.all[i].node1.y, Element.all[i].node2.x, Element.all[i].node2.y);
+                addLine(Element.all[i].node1.x, Element.all[i].node1.y, Element.all[i].node2.x, Element.all[i].node2.y, OxyColors.Black);
             }
 
             // add BC
@@ -106,7 +108,22 @@ namespace _2dStructuralFEM_GUI {
             this.p.solve();
             this.p.postProcess();
 
+            // add lines
+            int f = 1;// increase displacement factor
+            for (int i = 0; i < Element.all.Count; i++) {
+                addLine(Element.all[i].node1.x+p.solution.getNodeGlobalDisplacement(Element.all[i].node1,'x')*f,
+                        Element.all[i].node1.y + p.solution.getNodeGlobalDisplacement(Element.all[i].node1, 'y') * f,
+                        Element.all[i].node2.x + p.solution.getNodeGlobalDisplacement(Element.all[i].node2, 'x') * f,
+                        Element.all[i].node2.y + p.solution.getNodeGlobalDisplacement(Element.all[i].node2, 'y') * f, OxyColors.Red);
+            }
+            this.plotModel.InvalidatePlot(true); // refresh
+
             this.calculating_text.Text = "Done!";
+
+            resultsWindow resultsWindowObj = new resultsWindow();
+
+            resultsWindowObj.TextBox.Text = p.outputText;
+            resultsWindowObj.Show();
 
         }
     }

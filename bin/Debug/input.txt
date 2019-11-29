@@ -2,7 +2,7 @@
 # Lines end with 'new line'
 #
 # Add bar element:
-# addElement("bar", x1, y1, x2, y2, E, A, I)
+# addElement(bar, x1, y1, x2, y2, E, A, I)
 #
 # Add Boundary condition:
 # addBC(x, y, type, displacement)
@@ -30,15 +30,38 @@
 # addBC(3.2, 0, fix)
 # debug(true)
 
-addElement(bar, 0, -3, 0, 0, 21000, 0.0225, 0.0000421875)
-addElement(bar,0, 3, 0, 0, 21000, 0.0225, 0.0000421875)
-addElement(bar,0, 0, 3.2, 0, 21000, 0.0225, 0.0000421875)
+# red
+addElement(bar, 0, 0, 1.73, 3, 190000000, 0.0052956, 0.0000295)
+# green top
+addElement(bar, 1.73, 3, 5.2, 3, 190000000, 0.0016256, 0.0000112)
+addElement(bar, 5.2, 3, 8.66, 3, 190000000, 0.0016256, 0.0000112)
+addElement(bar, 8.66, 3, 12.12, 3, 190000000, 0.0016256, 0.0000112)
+addElement(bar, 12.12, 3, 15.59, 3, 190000000, 0.0016256, 0.0000112)
+# green bottom
+addElement(bar, 0, 0, 3.46, 0, 190000000, 0.0016256, 0.0000112)
+addElement(bar, 3.46, 0, 6.93, 0, 190000000, 0.0016256, 0.0000112)
+addElement(bar, 6.93, 0, 10.39, 0, 190000000, 0.0016256, 0.0000112)
+addElement(bar, 10.39, 0, 13.86, 0, 190000000, 0.0016256, 0.0000112)
+addElement(bar, 13.86, 0, 15.59, 0, 190000000, 0.0016256, 0.0000112)
+# blue
+addElement(bar, 1.73, 3, 3.46, 0, 190000000, 0.0014224, 0.0000059)
+addElement(bar, 3.46, 0, 5.2, 3, 190000000, 0.0014224, 0.0000059)
+addElement(bar, 5.2, 3, 6.93, 0, 190000000, 0.0014224, 0.0000059)
+addElement(bar, 6.93, 0, 8.66, 3, 190000000, 0.0014224, 0.0000059)
+addElement(bar, 8.66, 3, 10.39, 0, 190000000, 0.0014224, 0.0000059)
+addElement(bar, 10.39, 0, 12.12, 3, 190000000, 0.0014224, 0.0000059)
+addElement(bar, 12.12, 3, 13.86, 0, 190000000, 0.0014224, 0.0000059)
+addElement(bar, 13.86, 0, 15.59, 3, 190000000, 0.0014224, 0.0000059)
 
-addForce(0,0,-8,90,3.2,0,-8,90,false)
-addForce(0,0,50,0,false)
+addForce(0,0,6, -90, 3.46, 0, 6, -90, false)
+addForce(3.46, 0,6, -90, 6.93, 0, 6, -90, false)
+addForce(6.93, 0,6, -90, 10.39, 0, 6, -90, false)
+addForce(10.39, 0,6, -90, 13.86, 0, 6, -90, false)
+addForce(13.86, 0,6, -90, 15.59, 0, 6, -90, false)
 
-addBC(0, 3, fix)
-addBC(0, -3, fix)
-addBC(3.2, 0, fix)
+addBC(0, 0, xDisplacement,0)
+addBC(0, 0, yDisplacement,0)
+addBC(15.59, 0, xDisplacement,0)
+addBC(15.59, 3, xDisplacement,0)
 
 debug(false)

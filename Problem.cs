@@ -14,6 +14,11 @@ namespace _2dStructuralFEM_GUI {
 
         public Solution solution = new Solution();
 
+        public List<Load> inputConcentratedLoads = new List<Load>();
+        public List<Load> inputDistributedLoads = new List<Load>();
+
+        public string outputText="";
+
 
         public Matrix<double> stiffnessMatrix_BC; // stiff. matrix with BC applied
 
@@ -122,6 +127,8 @@ namespace _2dStructuralFEM_GUI {
                 if (this.debug) {
                     Console.WriteLine("Element " + e.number + " global stiffness matrix:");
                     Console.WriteLine(k);
+                    outputText += "Element " + e.number.ToString() + " global stiffness matrix:\n";
+                    outputText += k.ToString()+"\n";
                 }
                 for (int i=0; i<6; i++) {
                     for (int j=0; j<6; j++) {
@@ -132,6 +139,8 @@ namespace _2dStructuralFEM_GUI {
             if (this.debug) {
                 Console.WriteLine("Stiffness matrix:");
                 Console.WriteLine(this.stiffnessMatrix);
+                outputText += "Stiffness matrix:\n";
+                outputText += this.stiffnessMatrix.ToString() + "\n";
             }
 
             // Build Load vector
@@ -145,6 +154,8 @@ namespace _2dStructuralFEM_GUI {
             if (this.debug) {
                 Console.WriteLine("Load vector:");
                 Console.WriteLine(this.loadVector);
+                outputText += "Load vector:\n";
+                outputText += this.loadVector.ToString() + "\n";
             }
 
             // Apply BC's
@@ -165,23 +176,31 @@ namespace _2dStructuralFEM_GUI {
                 Console.WriteLine("Load vector with Boundary Conditions");
                 Console.WriteLine(this.loadVector);
                 Console.WriteLine("\n\n\n\n\n\n");
+
+                outputText += "Stiffness matrix with Boundary Conditions:\n";
+                outputText += this.stiffnessMatrix_BC.ToString() + "\n";
+                outputText += "Load vector with Boundary Conditions:\n";
+                outputText += this.loadVector.ToString() + "\n\n\n\n";
             }
         }
         public void solve() {
             this.displacementVector = Vector<double>.Build.Dense(Node.all.Count * 3);
             this.stiffnessMatrix_BC.Solve(this.loadVector).CopyTo(this.displacementVector);
             Console.WriteLine("############################################ Displacements: ############################################");
-            Node.printResults(this.displacementVector, "displacement");
+            outputText += "############################################ Displacements: ############################################\n";
+            outputText+=Node.printResults(this.displacementVector, "displacement");
             this.solution.displacements=displacementVector;
         }
 
         public void postProcess() {
             Console.WriteLine("######################################### External Nodal Forces #########################################");
+            outputText += "######################################### External Nodal Forces #########################################\n";
             Vector<double> externalForces =this.stiffnessMatrix* displacementVector;
-            Node.printResults(externalForces, "force");
+            outputText+=Node.printResults(externalForces, "force");
             this.solution.externalForces=externalForces;
 
             Console.WriteLine("############################################ Element Forces ############################################");
+            outputText += "############################################ Element Forces ############################################\n";
             Vector<double> localDisplacementVector = Vector<double>.Build.Dense(6);
             List<int> indexes;
             Vector<double> localForces=null;
@@ -194,7 +213,7 @@ namespace _2dStructuralFEM_GUI {
 
                 // E = del*K - f -> Slide is wrong (Logan Finite Element Book, pdf pg 217
                 localForces = e.getLocalK() * localDisplacementVector - e.getLocal(e.distributedLoadsVector);
-                Node.printLocalResults(localForces, e);
+                outputText+=Node.printLocalResults(localForces, e);
             }
 
             this.solution.elementForces=localForces;

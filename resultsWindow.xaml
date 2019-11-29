@@ -1,0 +1,15 @@
+﻿<Window x:Class="_2dStructuralFEM_GUI.resultsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:_2dStructuralFEM_GUI"
+        mc:Ignorable="d"
+        Title="results" Height="700" Width="800">
+    <Grid>
+        <TextBox Name="TextBox"
+         HorizontalScrollBarVisibility="Visible"
+         VerticalScrollBarVisibility="Visible"
+         TextWrapping="Wrap" Margin="6,0,-6.4,0.4" />
+    </Grid>
+</Window>
