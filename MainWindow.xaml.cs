@@ -101,7 +101,8 @@ namespace _2dStructuralFEM_GUI {
             }
         }
 
-        void addLoad(MainWindow window, Load l, double circleSize, OxyColor color) {
+        // returns arrow end point x1,y1
+        List<double> addLoad(MainWindow window, Load l, OxyColor color, double circleSize = 0, double maxLoadMagnitude = 1, double arrowUnitLength = 1) {
             if (l.alpha == null) { // moment
                 string s="Node " + l.node.number+"\n";
                 if (this.BC_list_nodes.Contains(l.node)) {
@@ -109,7 +110,61 @@ namespace _2dStructuralFEM_GUI {
                 }
                 s += "Moment (z axis)=" + l.magnitude;
                 addNode(window, l.x, l.y, s, circleSize, color);
+                List<double> r = new List<double>();
+                r.Add(l.node.x);
+                r.Add(l.node.y);
+                return r;
+
             }
+            else {
+                ArrowAnnotation arrow = new ArrowAnnotation() { };
+                arrow.HeadLength = window.l * 0.1;
+                arrow.StartPoint = new DataPoint(l.node.x, l.node.y);
+
+                arrow.EndPoint = new DataPoint(l.node.x+Math.Cos(Convert.ToDouble(l.alpha))*l.magnitude/maxLoadMagnitude*arrowUnitLength,
+                                               l.node.y + Math.Sin(Convert.ToDouble(l.alpha))*l.magnitude/maxLoadMagnitude*arrowUnitLength);
+                arrow.Text = "fx: " + l.x.ToString("0.##") + "\nfy: " + l.y.ToString("0.##");
+
+                arrow.Color = color;
+
+                double xOffset, yOffset;
+                xOffset = Math.Cos(Convert.ToDouble(l.alpha)) * l.magnitude / maxLoadMagnitude * arrowUnitLength + 0.03 * window.l;
+                yOffset = Math.Sin(Convert.ToDouble(l.alpha)) * l.magnitude / maxLoadMagnitude * arrowUnitLength + 0.03 * window.l;
+
+                if (l.alpha < 0) {
+                    l.alpha = 360 + l.alpha;
+                }
+
+                double a = Convert.ToDouble(l.alpha);
+                if (misc.toRadians(90) < a && a < misc.toRadians(270)) {
+                    xOffset += -2*0.03 * window.l;
+                }
+                if (misc.toRadians(180) < a && a <= misc.toRadians(360)) {
+                    yOffset += -2 * 0.03 * window.l;
+                }
+
+                arrow.TextPosition = new DataPoint(l.node.x+xOffset,l.node.y+yOffset);
+
+                window.plotModel.Annotations.Add(arrow);
+
+                List<double> r = new List<double>();
+                r.Add(arrow.EndPoint.X);
+                r.Add(arrow.EndPoint.Y);
+                return r;
+
+            }
+        }
+
+        void addDistributedLoad(MainWindow window, List<Load> loadList, OxyColor color, double circleSize = 0, double maxLoadMagnitude = 1, double arrowUnitLength = 1) {
+            Load load1 = loadList[0];
+            Load load2 = loadList[1];
+
+            List<double> p1 = new List<double>();
+            List<double> p2 = new List<double>();
+            p1=addLoad(window, load1, color, circleSize: circleSize, maxLoadMagnitude: maxLoadMagnitude, arrowUnitLength: arrowUnitLength);
+            p2=addLoad(window, load2, color, circleSize: circleSize, maxLoadMagnitude: maxLoadMagnitude, arrowUnitLength: arrowUnitLength);
+
+            addLine(window, p1[0], p1[1], p2[0], p2[1], color);
         }
         
         // Load input file
@@ -126,6 +181,9 @@ namespace _2dStructuralFEM_GUI {
             openFileDialog.ShowDialog();
             string fileName;
             fileName = openFileDialog.FileName;
+            if(fileName == "") {
+                return;
+            }
             new inputTxtReader(fileName, this.p);
 
             // show and hide components plot
@@ -157,15 +215,35 @@ namespace _2dStructuralFEM_GUI {
                 }
             }
 
+            this.l = Math.Max(xmax - xmin, ymax - ymin);
+
+            
+            // determine maxLoadMagnitude and arrowUnitLenght to scale loads
+            double maxLoadMagnitude = 0;
+            double arrowUnitLength = this.l * 0.1;
+            for (int i = 0; i < p.inputConcentratedLoads.Count; i++) {
+                if (p.inputConcentratedLoads[i].magnitude > maxLoadMagnitude && p.inputConcentratedLoads[i].alpha != null) {
+                    maxLoadMagnitude = p.inputConcentratedLoads[i].magnitude;
+                }
+            }
+            for (int i=0; i<p.inputDistributedLoads.Count; i++) {
+                if (p.inputDistributedLoads[i][0].magnitude > maxLoadMagnitude && p.inputDistributedLoads[i][0].alpha != null) {
+                    maxLoadMagnitude = p.inputDistributedLoads[i][0].magnitude;
+                }
+                if (p.inputDistributedLoads[i][1].magnitude > maxLoadMagnitude && p.inputDistributedLoads[i][1].alpha != null) {
+                    maxLoadMagnitude = p.inputDistributedLoads[i][1].magnitude;
+                }
+            }
+
             this.plotModel.Axes[0].Reset();
             this.plotModel.Axes[1].Reset();
 
-            this.plotModel.Axes[0].Maximum = xmax+2;
-            this.plotModel.Axes[0].Minimum = xmin-2;
-            this.plotModel.Axes[1].Maximum = ymax+2;
-            this.plotModel.Axes[1].Minimum = ymin-2;
+            if (maxLoadMagnitude == 0) { maxLoadMagnitude = 1; }
 
-            this.l = Math.Max(xmax - xmin, ymax - ymin);
+            this.plotModel.Axes[0].Maximum = (xmax + arrowUnitLength) * 1.05;
+            this.plotModel.Axes[0].Minimum = (xmin - arrowUnitLength) * 1.05;
+            this.plotModel.Axes[1].Maximum = (ymax + arrowUnitLength) * 1.05;
+            this.plotModel.Axes[1].Minimum = (ymin - arrowUnitLength) * 1.05;
 
             // add lines
             double d = this.l * 0.014;
@@ -182,12 +260,18 @@ namespace _2dStructuralFEM_GUI {
 
             // add loads
             for (int i=0; i<p.inputConcentratedLoads.Count; i++) {
-                addLoad(this, p.inputConcentratedLoads[i], this.l * 0.3, OxyColors.Aqua);
+            addLoad(this, p.inputConcentratedLoads[i], OxyColors.Aqua, circleSize : this.l * 0.3,
+                maxLoadMagnitude:maxLoadMagnitude,arrowUnitLength: arrowUnitLength);
+            }
+            for (int i=0; i<p.inputDistributedLoads.Count; i++) {
+                addDistributedLoad(this, p.inputDistributedLoads[i], OxyColors.DeepSkyBlue,
+                    circleSize: this.l * 0.3, maxLoadMagnitude: maxLoadMagnitude, arrowUnitLength: arrowUnitLength);
             }
 
             this.plotModel.InvalidatePlot(true); // refresh
         }   
 
+        // Solve
         private void button_Click(object sender, RoutedEventArgs e) {
             // Build and solve problem
             this.button.Visibility = Visibility.Hidden;
@@ -197,6 +281,7 @@ namespace _2dStructuralFEM_GUI {
             this.p.postProcess();
 
             this.plotModel.Series.Clear();
+            this.plotModel.Annotations.Clear();
             int f = 10;// increase displacement factor
             double d=this.l*0.014;
             // add lines
