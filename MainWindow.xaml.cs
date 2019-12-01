@@ -182,6 +182,9 @@ namespace _2dStructuralFEM_GUI {
             string fileName;
             fileName = openFileDialog.FileName;
             if(fileName == "") {
+                this.plotModel.Annotations.Clear();
+                this.plotModel.Series.Clear();
+                this.plotModel.InvalidatePlot(true);
                 return;
             }
             new inputTxtReader(fileName, this.p);
@@ -252,20 +255,20 @@ namespace _2dStructuralFEM_GUI {
                     Element.all[i].node1.y + d * Math.Sin(Element.all[i].alpha),
                     Element.all[i].node2.x - d * Math.Cos(Element.all[i].alpha),
                     Element.all[i].node2.y - d * Math.Sin(Element.all[i].alpha), OxyColors.Black);
-                addNode(this, Element.all[i].node1.x, Element.all[i].node1.y, "Node " + Element.all[i].node1.number + "\n", this.l * 0.4, OxyColors.Black);
+                addNode(this, Element.all[i].node1.x, Element.all[i].node1.y, "Node " + Element.all[i].node1.number + "\n", 5, OxyColors.Black);
             }
 
             // add BCs
-            addBCs(this,this.l*0.4);
+            addBCs(this,5);
 
             // add loads
             for (int i=0; i<p.inputConcentratedLoads.Count; i++) {
-            addLoad(this, p.inputConcentratedLoads[i], OxyColors.Aqua, circleSize : this.l * 0.3,
+            addLoad(this, p.inputConcentratedLoads[i], OxyColors.Aqua, circleSize : 5,
                 maxLoadMagnitude:maxLoadMagnitude,arrowUnitLength: arrowUnitLength);
             }
             for (int i=0; i<p.inputDistributedLoads.Count; i++) {
                 addDistributedLoad(this, p.inputDistributedLoads[i], OxyColors.DeepSkyBlue,
-                    circleSize: this.l * 0.3, maxLoadMagnitude: maxLoadMagnitude, arrowUnitLength: arrowUnitLength);
+                    circleSize: 5, maxLoadMagnitude: maxLoadMagnitude, arrowUnitLength: arrowUnitLength);
             }
 
             this.plotModel.InvalidatePlot(true); // refresh
@@ -313,7 +316,7 @@ namespace _2dStructuralFEM_GUI {
             for (int i = 0; i < Node.all.Count; i++) {
                 addNode(this,Node.all[i].x + p.solution.getNodeGlobalDisplacement(Node.all[i], 'x') * f,
                         Node.all[i].y + p.solution.getNodeGlobalDisplacement(Node.all[i], 'y') * f,
-                        Node.all[i].label, this.l*0.4, OxyColors.Red);
+                        "Node "+Node.all[i].number+"\n"+Node.all[i].label, 5, OxyColors.Red);
             }
 
             this.plotModel.InvalidatePlot(true); // refresh
