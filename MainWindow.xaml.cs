@@ -26,14 +26,22 @@ namespace _2dStructuralFEM_GUI {
 
         Problem p;
         PlotModel plotModel;
+        PlotController customController;
         List<string> BC_list_type = new List<string>();
         List<BoundaryCondition> BC_list=new List<BoundaryCondition>();
+        double circleRadius;
 
     public MainWindow() {
             InitializeComponent();
             this.p = new Problem();
+
             this.plot.Model = new PlotModel(){ PlotType = PlotType.Cartesian }; ;
             this.plotModel = this.plot.Model;
+
+            this.customController = new PlotController();
+            this.plot.Controller = this.customController;
+            customController.UnbindMouseDown(OxyMouseButton.Left);
+            customController.BindMouseEnter(PlotCommands.HoverPointsOnlyTrack);
 
             plotModel.Axes.Add(new LinearAxis() {
                 Position = AxisPosition.Bottom,
@@ -47,15 +55,25 @@ namespace _2dStructuralFEM_GUI {
         }
 
         public void addLine(double x1, double y1, double x2, double y2, OxyColor color) {
-            LineSeries series1 = null;
-            series1 = new LineSeries { Color = color };
+            LineSeries series1 = new LineSeries { Color = color };
             series1.Points.Add(new DataPoint(x1, y1));
             series1.Points.Add(new DataPoint(x2, y2));
+            series1.TrackerKey = "InvisibleTracker";
             plotModel.Series.Add(series1);
 
         }
 
-        void addBCs() {
+        public void addNode(double x, double y, string s, double markerSize, OxyColor color) {
+            LineSeries series = new LineSeries();
+            series.MarkerType = OxyPlot.MarkerType.Circle;
+            series.Color = color;
+            series.MarkerSize = markerSize;
+            series.Points.Add(new DataPoint(x, y));
+            series.TrackerFormatString = s;
+            plotModel.Series.Add(series);
+        }
+
+        void addBCs(double circleSize) {
             bool found;
             int i_aux=0;
             for (int j=0; j<BoundaryCondition.all.Count; j++) {
@@ -68,7 +86,7 @@ namespace _2dStructuralFEM_GUI {
                     }
                 }
 
-                if (!found) {
+                if (!found) {   
                     this.BC_list.Add(BoundaryCondition.all[j]);
                     this.BC_list_type.Add(BoundaryCondition.all[j].type);
                 }
@@ -78,11 +96,7 @@ namespace _2dStructuralFEM_GUI {
             }
             
             for(int i=0; i<this.BC_list.Count; i++) {
-                var textAnnotation = new TextAnnotation {
-                    Text = this.BC_list_type[i],
-                    TextPosition = new DataPoint(this.BC_list[i].node.x, this.BC_list[i].node.y)
-                };
-                this.plotModel.Annotations.Add(textAnnotation);
+                addNode(this.BC_list[i].node.x, this.BC_list[i].node.y,this.BC_list_type[i]+"\n", circleSize, OxyColors.Black);
             }
         }
         
@@ -104,8 +118,6 @@ namespace _2dStructuralFEM_GUI {
                 addLine(Element.all[i].node1.x, Element.all[i].node1.y, Element.all[i].node2.x, Element.all[i].node2.y, OxyColors.Black);
             }
 
-            // add BC
-            addBCs();
 
             double xmin, xmax, ymin, ymax;
             xmin = Node.all[0].x;
@@ -128,11 +140,6 @@ namespace _2dStructuralFEM_GUI {
                 }
             }
 
-            Console.WriteLine(xmin.ToString());
-            Console.WriteLine(xmax.ToString());
-            Console.WriteLine(ymin.ToString());
-            Console.WriteLine(ymax.ToString());
-
             this.plotModel.Axes[0].Reset();
             this.plotModel.Axes[1].Reset();
 
@@ -140,6 +147,11 @@ namespace _2dStructuralFEM_GUI {
             this.plotModel.Axes[0].Minimum = xmin-2;
             this.plotModel.Axes[1].Maximum = ymax+2;
             this.plotModel.Axes[1].Minimum = ymin-2;
+
+            this.circleRadius = 5;
+
+            // add BC
+            addBCs(this.circleRadius);
 
             this.plotModel.InvalidatePlot(true); // refresh
         }   
@@ -152,22 +164,31 @@ namespace _2dStructuralFEM_GUI {
             this.p.solve();
             this.p.postProcess();
 
-            // add lines
             int f = 10;// increase displacement factor
+            double d = 0.1;
+            // add lines
             for (int i = 0; i < Element.all.Count; i++) {
-                addLine(Element.all[i].node1.x+p.solution.getNodeGlobalDisplacement(Element.all[i].node1,'x')*f,
-                        Element.all[i].node1.y + p.solution.getNodeGlobalDisplacement(Element.all[i].node1, 'y') * f,
-                        Element.all[i].node2.x + p.solution.getNodeGlobalDisplacement(Element.all[i].node2, 'x') * f,
-                        Element.all[i].node2.y + p.solution.getNodeGlobalDisplacement(Element.all[i].node2, 'y') * f, OxyColors.Red);
+                addLine(Element.all[i].node1.x + p.solution.getNodeGlobalDisplacement(Element.all[i].node1, 'x') * f + d*Math.Cos(Element.all[i].alpha),
+                        Element.all[i].node1.y + p.solution.getNodeGlobalDisplacement(Element.all[i].node1, 'y') * f + d * Math.Sin(Element.all[i].alpha),
+                        Element.all[i].node2.x + p.solution.getNodeGlobalDisplacement(Element.all[i].node2, 'x') * f - d * Math.Cos(Element.all[i].alpha),
+                        Element.all[i].node2.y + p.solution.getNodeGlobalDisplacement(Element.all[i].node2, 'y') * f - d * Math.Sin(Element.all[i].alpha), OxyColors.Red);
             }
+
+            // add nodes
+            for (int i = 0; i < Node.all.Count; i++) {
+                addNode(Node.all[i].x + p.solution.getNodeGlobalDisplacement(Node.all[i], 'x') * f,
+                        Node.all[i].y + p.solution.getNodeGlobalDisplacement(Node.all[i], 'y') * f,
+                        "dx= " + p.solution.getNodeGlobalDisplacement(Node.all[i], 'x') + "\n" +
+                        "dy= " + p.solution.getNodeGlobalDisplacement(Node.all[i], 'y') + "\n", this.circleRadius, OxyColors.Red);
+            }
+
             this.plotModel.InvalidatePlot(true); // refresh
 
             this.button.Visibility = Visibility.Collapsed;
             this.calculating_text.Visibility = Visibility.Visible;
-            this.calculating_text.Text = "Done!\nFinal structure configuration in red\n(displacements multiplied by 10)";
+            this.calculating_text.Text = "Done!\nFinal structure configuration in red (displacements multiplied by 10)\nHover mouse on red nodes to see results\n";
 
             resultsWindow resultsWindowObj = new resultsWindow();
-
             resultsWindowObj.TextBox.Text = p.outputText;
             resultsWindowObj.Show();
 

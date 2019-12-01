@@ -27,6 +27,15 @@
                       BorderBrush="Black"
                       BorderThickness="1"
                       Visibility="Hidden">
+                        <oxy:PlotView.TrackerDefinitions>
+                            <oxy:TrackerDefinition TrackerKey="InvisibleTracker">
+                                <oxy:TrackerDefinition.TrackerTemplate>
+                                    <ControlTemplate>
+                                        <TextBlock Visibility="Hidden"/>
+                                    </ControlTemplate>
+                                </oxy:TrackerDefinition.TrackerTemplate>
+                            </oxy:TrackerDefinition>
+                        </oxy:PlotView.TrackerDefinitions>
                     </oxy:PlotView>
                     <Button x:Name="button"
                     HorizontalAlignment="Right"
