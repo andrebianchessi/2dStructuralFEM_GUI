@@ -21,6 +21,8 @@ namespace _2dStructuralFEM_GUI {
         public static int v_index_local = 1; // y local index
         public static int w_index_local = 2; // z local index
 
+        public string label = "";
+
 
         // list of elements attached to this node 
         //public List<Element> elements;
@@ -34,7 +36,7 @@ namespace _2dStructuralFEM_GUI {
             this.v_index = 3 * this.number -2;   // node 2 -> u_index = 3, v_index = 4, w_index = 5
             this.w_index = 3 * this.number - 1;
 
-  
+            this.label = "";
 
             Node.all.Add(this);
         }

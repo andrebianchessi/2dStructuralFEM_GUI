@@ -172,14 +172,30 @@ namespace _2dStructuralFEM_GUI {
                         Element.all[i].node1.y + p.solution.getNodeGlobalDisplacement(Element.all[i].node1, 'y') * f + d * Math.Sin(Element.all[i].alpha),
                         Element.all[i].node2.x + p.solution.getNodeGlobalDisplacement(Element.all[i].node2, 'x') * f - d * Math.Cos(Element.all[i].alpha),
                         Element.all[i].node2.y + p.solution.getNodeGlobalDisplacement(Element.all[i].node2, 'y') * f - d * Math.Sin(Element.all[i].alpha), OxyColors.Red);
+
+                if (Element.all[i].node1.label == "") {
+                    Element.all[i].node1.label = "dx="+p.solution.getNodeGlobalDisplacement(Element.all[i].node1, 'x') + "\n" +
+                                             "dy=" + p.solution.getNodeGlobalDisplacement(Element.all[i].node1, 'y') + "\n" +
+                                             "External force x = " + p.solution.getNodeExternalForce(Element.all[i].node1, 'x') + "\n" +
+                                             "External force y = " + p.solution.getNodeExternalForce(Element.all[i].node1, 'y') + "\n" +
+                                             "External moment = " + p.solution.getNodeExternalForce(Element.all[i].node1, 'z') + "\n";
+                }
+                if (Element.all[i].node2.label == "") {
+                    Element.all[i].node2.label = "dx = "+p.solution.getNodeGlobalDisplacement(Element.all[i].node2, 'x') + "\n" +
+                                             "dy = " + p.solution.getNodeGlobalDisplacement(Element.all[i].node2, 'y') + "\n" +
+                                             "External force x = " + p.solution.getNodeExternalForce(Element.all[i].node2, 'x') + "\n" +
+                                             "External force y = " + p.solution.getNodeExternalForce(Element.all[i].node2, 'y') + "\n" +
+                                             "External moment = " + p.solution.getNodeExternalForce(Element.all[i].node2, 'z') + "\n";
+                }
+
+
             }
 
             // add nodes
             for (int i = 0; i < Node.all.Count; i++) {
                 addNode(Node.all[i].x + p.solution.getNodeGlobalDisplacement(Node.all[i], 'x') * f,
                         Node.all[i].y + p.solution.getNodeGlobalDisplacement(Node.all[i], 'y') * f,
-                        "dx= " + p.solution.getNodeGlobalDisplacement(Node.all[i], 'x') + "\n" +
-                        "dy= " + p.solution.getNodeGlobalDisplacement(Node.all[i], 'y') + "\n", this.circleRadius, OxyColors.Red);
+                        Node.all[i].label, this.circleRadius, OxyColors.Red);
             }
 
             this.plotModel.InvalidatePlot(true); // refresh
