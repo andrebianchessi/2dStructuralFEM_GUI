@@ -12,7 +12,7 @@
 # Add loads:
 #	Concentrated force  -> addForce(x, y, magnitude, alpha, radians = false)
 #	Distributed force   -> addForce(double x1, double y1, double magnitude1, double alpha1, double x2, double y2, double magnitude2, double alpha2, bool radians = false)
-#	COncentrated moment -> addMoment(double x, double y, double magnitude)
+#	Concentrated moment -> addMoment(double x, double y, double magnitude)
 #
 # Debug mode:
 # debug(true)

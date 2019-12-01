@@ -29,11 +29,11 @@ namespace _2dStructuralFEM_GUI {
         PlotController customController;
         List<string> BC_list_type = new List<string>();
         List<BoundaryCondition> BC_list=new List<BoundaryCondition>();
-        double circleRadius;
+        List<Node> BC_list_nodes = new List<Node>();
+        double l; // reference length which is max{grid length, grid height}
 
     public MainWindow() {
             InitializeComponent();
-            this.p = new Problem();
 
             this.plot.Model = new PlotModel(){ PlotType = PlotType.Cartesian }; ;
             this.plotModel = this.plot.Model;
@@ -54,26 +54,26 @@ namespace _2dStructuralFEM_GUI {
             });
         }
 
-        public void addLine(double x1, double y1, double x2, double y2, OxyColor color) {
+        public void addLine(MainWindow window, double x1, double y1, double x2, double y2, OxyColor color) {
             LineSeries series1 = new LineSeries { Color = color };
             series1.Points.Add(new DataPoint(x1, y1));
             series1.Points.Add(new DataPoint(x2, y2));
             series1.TrackerKey = "InvisibleTracker";
-            plotModel.Series.Add(series1);
+            window.plotModel.Series.Add(series1);
 
         }
 
-        public void addNode(double x, double y, string s, double markerSize, OxyColor color) {
+        public void addNode(MainWindow window, double x, double y, string s, double markerSize, OxyColor color) {
             LineSeries series = new LineSeries();
             series.MarkerType = OxyPlot.MarkerType.Circle;
             series.Color = color;
             series.MarkerSize = markerSize;
             series.Points.Add(new DataPoint(x, y));
             series.TrackerFormatString = s;
-            plotModel.Series.Add(series);
+            window.plotModel.Series.Add(series);
         }
 
-        void addBCs(double circleSize) {
+        void addBCs(MainWindow window, double circleSize) {
             bool found;
             int i_aux=0;
             for (int j=0; j<BoundaryCondition.all.Count; j++) {
@@ -88,6 +88,7 @@ namespace _2dStructuralFEM_GUI {
 
                 if (!found) {   
                     this.BC_list.Add(BoundaryCondition.all[j]);
+                    this.BC_list_nodes.Add(BoundaryCondition.all[j].node);
                     this.BC_list_type.Add(BoundaryCondition.all[j].type);
                 }
                 if (found) {
@@ -96,12 +97,30 @@ namespace _2dStructuralFEM_GUI {
             }
             
             for(int i=0; i<this.BC_list.Count; i++) {
-                addNode(this.BC_list[i].node.x, this.BC_list[i].node.y,this.BC_list_type[i]+"\n", circleSize, OxyColors.Black);
+                addNode(window,this.BC_list[i].node.x, this.BC_list[i].node.y, "Node " + this.BC_list[i].node.number +"\n"+ this.BC_list_type[i]+"\n", circleSize, OxyColors.Blue);
+            }
+        }
+
+        void addLoad(MainWindow window, Load l, double circleSize, OxyColor color) {
+            if (l.alpha == null) { // moment
+                string s="Node " + l.node.number+"\n";
+                if (this.BC_list_nodes.Contains(l.node)) {
+                    s += this.BC_list_type[this.BC_list_nodes.IndexOf(l.node)] + "\n";
+                }
+                s += "Moment (z axis)=" + l.magnitude;
+                addNode(window, l.x, l.y, s, circleSize, color);
             }
         }
         
-
+        // Load input file
         private void MenuItem_Click(object sender, RoutedEventArgs e) {
+            // Create new problem
+            this.p = new Problem();
+
+            // Clear plot
+            this.plotModel.Series.Clear();
+            this.plotModel.InvalidatePlot(true);
+
             // Import input
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.ShowDialog();
@@ -109,14 +128,12 @@ namespace _2dStructuralFEM_GUI {
             fileName = openFileDialog.FileName;
             new inputTxtReader(fileName, this.p);
 
-            // show plot
+            // show and hide components plot
             this.plot.Visibility = Visibility.Visible;
             this.button.Visibility = Visibility.Visible;
+            this.calculating_text.Visibility = Visibility.Collapsed;
 
-            // add lines
-            for (int i=0; i<Element.all.Count; i++) {
-                addLine(Element.all[i].node1.x, Element.all[i].node1.y, Element.all[i].node2.x, Element.all[i].node2.y, OxyColors.Black);
-            }
+   
 
 
             double xmin, xmax, ymin, ymax;
@@ -148,10 +165,25 @@ namespace _2dStructuralFEM_GUI {
             this.plotModel.Axes[1].Maximum = ymax+2;
             this.plotModel.Axes[1].Minimum = ymin-2;
 
-            this.circleRadius = 5;
+            this.l = Math.Max(xmax - xmin, ymax - ymin);
 
-            // add BC
-            addBCs(this.circleRadius);
+            // add lines
+            double d = this.l * 0.014;
+            for (int i = 0; i < Element.all.Count; i++) {
+                addLine(this, Element.all[i].node1.x + d * Math.Cos(Element.all[i].alpha),
+                    Element.all[i].node1.y + d * Math.Sin(Element.all[i].alpha),
+                    Element.all[i].node2.x - d * Math.Cos(Element.all[i].alpha),
+                    Element.all[i].node2.y - d * Math.Sin(Element.all[i].alpha), OxyColors.Black);
+                addNode(this, Element.all[i].node1.x, Element.all[i].node1.y, "Node " + Element.all[i].node1.number + "\n", this.l * 0.4, OxyColors.Black);
+            }
+
+            // add BCs
+            addBCs(this,this.l*0.4);
+
+            // add loads
+            for (int i=0; i<p.inputConcentratedLoads.Count; i++) {
+                addLoad(this, p.inputConcentratedLoads[i], this.l * 0.3, OxyColors.Aqua);
+            }
 
             this.plotModel.InvalidatePlot(true); // refresh
         }   
@@ -164,11 +196,12 @@ namespace _2dStructuralFEM_GUI {
             this.p.solve();
             this.p.postProcess();
 
+            this.plotModel.Series.Clear();
             int f = 10;// increase displacement factor
-            double d = 0.1;
+            double d=this.l*0.014;
             // add lines
             for (int i = 0; i < Element.all.Count; i++) {
-                addLine(Element.all[i].node1.x + p.solution.getNodeGlobalDisplacement(Element.all[i].node1, 'x') * f + d*Math.Cos(Element.all[i].alpha),
+                addLine(this,Element.all[i].node1.x + p.solution.getNodeGlobalDisplacement(Element.all[i].node1, 'x') * f + d*Math.Cos(Element.all[i].alpha),
                         Element.all[i].node1.y + p.solution.getNodeGlobalDisplacement(Element.all[i].node1, 'y') * f + d * Math.Sin(Element.all[i].alpha),
                         Element.all[i].node2.x + p.solution.getNodeGlobalDisplacement(Element.all[i].node2, 'x') * f - d * Math.Cos(Element.all[i].alpha),
                         Element.all[i].node2.y + p.solution.getNodeGlobalDisplacement(Element.all[i].node2, 'y') * f - d * Math.Sin(Element.all[i].alpha), OxyColors.Red);
@@ -193,16 +226,17 @@ namespace _2dStructuralFEM_GUI {
 
             // add nodes
             for (int i = 0; i < Node.all.Count; i++) {
-                addNode(Node.all[i].x + p.solution.getNodeGlobalDisplacement(Node.all[i], 'x') * f,
+                addNode(this,Node.all[i].x + p.solution.getNodeGlobalDisplacement(Node.all[i], 'x') * f,
                         Node.all[i].y + p.solution.getNodeGlobalDisplacement(Node.all[i], 'y') * f,
-                        Node.all[i].label, this.circleRadius, OxyColors.Red);
+                        Node.all[i].label, this.l*0.4, OxyColors.Red);
             }
 
             this.plotModel.InvalidatePlot(true); // refresh
 
             this.button.Visibility = Visibility.Collapsed;
             this.calculating_text.Visibility = Visibility.Visible;
-            this.calculating_text.Text = "Done!\nFinal structure configuration in red (displacements multiplied by 10)\nHover mouse on red nodes to see results\n";
+            this.calculating_text.Text = "Done!\nFinal structure configuration in red (displacements multiplied by 10)\nHover mouse on red nodes to view results\n";
+
 
             resultsWindow resultsWindowObj = new resultsWindow();
             resultsWindowObj.TextBox.Text = p.outputText;

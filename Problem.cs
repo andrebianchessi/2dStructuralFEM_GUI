@@ -12,17 +12,32 @@ namespace _2dStructuralFEM_GUI {
         public Matrix<double> stiffnessMatrix;
         public Vector<double> displacementVector;
 
-        public Solution solution = new Solution();
+        public Solution solution;
 
-        public List<Load> inputConcentratedLoads = new List<Load>();
-        public List<Load> inputDistributedLoads = new List<Load>();
+        public List<Load> inputConcentratedLoads;
+        public List<List<Load>> inputDistributedLoads;
 
-        public string outputText="";
+        public string outputText;
 
 
         public Matrix<double> stiffnessMatrix_BC; // stiff. matrix with BC applied
 
-        public bool debug = false;
+        public bool debug;
+
+        public Problem() {
+            this.solution = new Solution();
+            this.outputText = "";
+            this.debug = false;
+            this.inputConcentratedLoads = new List<Load>();
+            this.inputDistributedLoads = new List<List<Load>>();
+
+            Node.all.Clear();
+            Element.all.Clear();
+            BoundaryCondition.all.Clear();
+            Load.all.Clear();
+
+
+        }
 
         // create element
         public void addElement(string type, double x1, double y1, double x2, double y2, double E, double A, double I) {
@@ -37,13 +52,16 @@ namespace _2dStructuralFEM_GUI {
                 alpha = misc.toRadians(alpha);
             }
             Node n = Node.getNode(x, y);
-            new Load(n, magnitude, alpha, radians=true);
+            new Load(n, magnitude, alpha, radians:true);
+
+            this.inputConcentratedLoads.Add(new Load(n, magnitude, alpha, radians : true, addToAll:false));
         }
 
         // create concentrated moment
         public void addMoment(double x, double y, double magnitude) {
             Node n = Node.getNode(x, y);
             new Load(n, magnitude);
+            this.inputConcentratedLoads.Add(new Load(n, magnitude, addToAll:false));
         }
 
         // create distributed force
@@ -53,8 +71,14 @@ namespace _2dStructuralFEM_GUI {
                 alpha1 = misc.toRadians(alpha1);
                 alpha2 = misc.toRadians(alpha2);
             }
+
             Node n1 = Node.getNode(x1, y1);
             Node n2 = Node.getNode(x2, y2);
+
+            List<Load> distributedLoadList = new List<Load>();
+            distributedLoadList.Add( new Load(n1,magnitude1,alpha1,radians:true,addToAll:false));
+            distributedLoadList.Add( new Load(n2, magnitude2, alpha2, radians: true, addToAll: false));
+            this.inputDistributedLoads.Add(distributedLoadList);
 
             Element e = Element.getElement(x1, y1, x2, y2);
             double l = e.l;
@@ -194,7 +218,7 @@ namespace _2dStructuralFEM_GUI {
 
         public void postProcess() {
             Console.WriteLine("######################################### External Nodal Forces #########################################");
-            outputText += "######################################### External Nodal Forces #########################################\n";
+            outputText += "######################################### External Nodal Forces ##########################################\n";
             Vector<double> externalForces =this.stiffnessMatrix* displacementVector;
             outputText+=Node.printResults(externalForces, "force");
             this.solution.externalForces=externalForces;

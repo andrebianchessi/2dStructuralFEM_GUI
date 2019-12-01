@@ -13,7 +13,7 @@ namespace _2dStructuralFEM_GUI {
         public List<Element> elements;     // list of elements where load is applied
 
         public double magnitude; // load magnitude
-        public double alpha;     // angle c.c.-wise to global x axis
+        public double? alpha = null;     // angle c.c.-wise to global x axis
 
         public double x; // magnitude on each global direction
         public double y;
@@ -24,7 +24,7 @@ namespace _2dStructuralFEM_GUI {
         /// <summary>
         /// Create force with global direction given by alpha
         /// </summary>
-        public Load(Node node, double magnitude, double alpha, bool radians=false) {
+        public Load(Node node, double magnitude, double alpha, bool radians=false, bool addToAll=true) {
             if (!radians) {
                 alpha = misc.toRadians(alpha);
             }
@@ -38,7 +38,9 @@ namespace _2dStructuralFEM_GUI {
 
             this.elements = new List<Element>();
 
-            Load.all.Add(this);
+            if (addToAll) {
+                Load.all.Add(this);
+            }
 
             foreach(Element e in Element.all) {
                 if( e.nodes.Contains(node) ){
@@ -49,9 +51,10 @@ namespace _2dStructuralFEM_GUI {
         /// <summary>
         /// Create moment
         /// </summary>
-        public Load(Node node, double magnitude) {
+        public Load(Node node, double magnitude, bool addToAll = true) {
             this.node = node;
             this.magnitude = magnitude;
+            this.alpha = null;
 
             this.x = 0;
             this.y = 0;
@@ -59,7 +62,9 @@ namespace _2dStructuralFEM_GUI {
 
             this.elements = new List<Element>();
 
-            Load.all.Add(this);
+            if (addToAll) {
+                Load.all.Add(this);
+            }
 
             foreach (Element e in Element.all) {
                 if (e.nodes.Contains(node)) {
