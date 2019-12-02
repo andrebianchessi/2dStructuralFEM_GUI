@@ -59,6 +59,7 @@ namespace _2dStructuralFEM_GUI {
             series1.Points.Add(new DataPoint(x1, y1));
             series1.Points.Add(new DataPoint(x2, y2));
             series1.TrackerKey = "InvisibleTracker";
+            
             window.plotModel.Series.Add(series1);
 
         }
@@ -255,7 +256,8 @@ namespace _2dStructuralFEM_GUI {
                     Element.all[i].node1.y + d * Math.Sin(Element.all[i].alpha),
                     Element.all[i].node2.x - d * Math.Cos(Element.all[i].alpha),
                     Element.all[i].node2.y - d * Math.Sin(Element.all[i].alpha), OxyColors.Black);
-                addNode(this, Element.all[i].node1.x, Element.all[i].node1.y, "Node " + Element.all[i].node1.number + "\n", 5, OxyColors.Black);
+                addNode(this, Element.all[i].node1.x, Element.all[i].node1.y, "Node " + Element.all[i].node1.number + "\n",
+                    5, OxyColors.Black);
             }
 
             // add BCs
@@ -292,7 +294,8 @@ namespace _2dStructuralFEM_GUI {
                 addLine(this,Element.all[i].node1.x + p.solution.getNodeGlobalDisplacement(Element.all[i].node1, 'x') * f + d*Math.Cos(Element.all[i].alpha),
                         Element.all[i].node1.y + p.solution.getNodeGlobalDisplacement(Element.all[i].node1, 'y') * f + d * Math.Sin(Element.all[i].alpha),
                         Element.all[i].node2.x + p.solution.getNodeGlobalDisplacement(Element.all[i].node2, 'x') * f - d * Math.Cos(Element.all[i].alpha),
-                        Element.all[i].node2.y + p.solution.getNodeGlobalDisplacement(Element.all[i].node2, 'y') * f - d * Math.Sin(Element.all[i].alpha), OxyColors.Red);
+                        Element.all[i].node2.y + p.solution.getNodeGlobalDisplacement(Element.all[i].node2, 'y') * f - d * Math.Sin(Element.all[i].alpha),
+                        OxyColors.Red);
 
                 if (Element.all[i].node1.label == "") {
                     Element.all[i].node1.label = "dx="+p.solution.getNodeGlobalDisplacement(Element.all[i].node1, 'x') + "\n" +
