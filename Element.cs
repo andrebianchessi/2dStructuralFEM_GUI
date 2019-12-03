@@ -154,7 +154,6 @@ namespace _2dStructuralFEM_GUI {
             nodalDisplacements[4] = s.getNodeGlobalDisplacement(this.node2, 'y');
             nodalDisplacements[5] = s.getNodeGlobalDisplacement(this.node2, 'z');
             nodalDisplacements = this.getLocal(nodalDisplacements);
-            Console.WriteLine(nodalDisplacements);
 
             // local displacements at x_adim
             double u;
@@ -205,12 +204,13 @@ namespace _2dStructuralFEM_GUI {
 
             uD[0] = nodalDisplacements[0];
             uD[1] = nodalDisplacements[3];
+            
 
             u = uV * uD;
 
             // Fx = E * (u - u1) / length
             double length = x_adim * this.l; // distance from node1 to x_adim
-            r[0] = this.E *this.A* u / length;
+            r[0] = this.E *this.A* (u- nodalDisplacements[0]) / length;
 
             return r;
         }

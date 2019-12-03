@@ -341,12 +341,10 @@ namespace _2dStructuralFEM_GUI {
             this.calculating_text.Text = "Done!\nFinal structure configuration in red (displacements multiplied by "+f+")\nHover mouse on red nodes to view results\n";
 
             // text output
-            Console.WriteLine("\n\n\n");
             Element testElement = Element.all[0];
-            Console.WriteLine(testElement.number);
-            Console.WriteLine("\n\n");
-            for(int i=0; i<=100; i++) {
-                Console.WriteLine(testElement.getForces(p.solution,i/100.0)[0]);
+            Console.WriteLine("\n\n\nElement:"+ testElement.number);
+            for(int i=1; i<10; i++) {
+                Console.WriteLine(testElement.getForces(p.solution,i/10.0)[0]);
             }
 
             resultsWindow resultsWindowObj = new resultsWindow();
