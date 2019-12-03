@@ -344,15 +344,9 @@ namespace _2dStructuralFEM_GUI {
             Console.WriteLine("\n\n\n");
             Element testElement = Element.all[0];
             Console.WriteLine(testElement.number);
-            Console.WriteLine(p.solution.getElementLocalForce(testElement, "x1"));
-            Console.WriteLine(p.solution.getElementLocalForce(testElement, "y1"));
-            Console.WriteLine(p.solution.getElementLocalForce(testElement, "z1"));
-            Console.WriteLine(p.solution.getElementLocalForce(testElement, "x2"));
-            Console.WriteLine(p.solution.getElementLocalForce(testElement, "y2"));
-            Console.WriteLine(p.solution.getElementLocalForce(testElement, "z2"));
             Console.WriteLine("\n\n");
             for(int i=0; i<=100; i++) {
-                Console.WriteLine(testElement.getForces(p.solution,i/100.0)[2]);
+                Console.WriteLine(testElement.getForces(p.solution,i/100.0)[0]);
             }
 
             resultsWindow resultsWindowObj = new resultsWindow();

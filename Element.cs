@@ -138,10 +138,6 @@ namespace _2dStructuralFEM_GUI {
         // getForces()[0] -> sigma
         // getForces()[1] -> V
         // getForces()[2] -> M
-        // using local coordinate system
-        //      positive sigma  : from node1 to node 2
-        //      positive moment : z perendicular, leaving the plane
-        //      positive shear  : z^x=y
         // 0<=x_adim<=1 (adimensional x)
         public List<double> getForces(Solution s, double x_adim) {
             List<double> r = new List<double>();
@@ -149,14 +145,72 @@ namespace _2dStructuralFEM_GUI {
             r.Add(0.0);
             r.Add(0.0);
 
-            double sigmaNode1 = s.getElementLocalForce(this, "x1");
-            double vNode1 = s.getElementLocalForce(this, "y1");
-            double vNode2 = s.getElementLocalForce(this, "y2");
-            double mNode1 = s.getElementLocalForce(this, "z1");
+            Vector<double> nodalDisplacements = Vector<double>.Build.Dense(6);
+            Vector<double> displacement = Vector<double>.Build.Dense(6);
+            nodalDisplacements[0] = s.getNodeGlobalDisplacement(this.node1, 'x');
+            nodalDisplacements[1] = s.getNodeGlobalDisplacement(this.node1, 'y');
+            nodalDisplacements[2] = s.getNodeGlobalDisplacement(this.node1, 'z');
+            nodalDisplacements[3] = s.getNodeGlobalDisplacement(this.node2, 'x');
+            nodalDisplacements[4] = s.getNodeGlobalDisplacement(this.node2, 'y');
+            nodalDisplacements[5] = s.getNodeGlobalDisplacement(this.node2, 'z');
+            nodalDisplacements = this.getLocal(nodalDisplacements);
+            Console.WriteLine(nodalDisplacements);
 
-            r[0] = -sigmaNode1;
-            r[1] = vNode1 + x_adim * (vNode2-vNode1);
-            r[2] = mNode1 + x_adim*vNode1+x_adim*x_adim/2.0*(vNode2-vNode1);
+            // local displacements at x_adim
+            double u;
+            double v;
+
+            // v = yV*yM*yD
+            Vector<double> yV = Vector<double>.Build.Dense(4);
+            Vector<double> yD = Vector<double>.Build.Dense(4);
+            Matrix<double> yM = Matrix<double>.Build.Dense(4,4);
+            yD[0] = nodalDisplacements[1];
+            yD[1] = nodalDisplacements[2];
+            yD[2] = nodalDisplacements[4];
+            yD[3] = nodalDisplacements[5];
+
+            yV[0] = 1;
+            yV[1] = x_adim;
+            yV[2] = x_adim * x_adim;
+            yV[3] = x_adim * x_adim * x_adim;
+
+            yM[0, 0] = 1;
+            yM[0, 1] = 0;
+            yM[0, 2] = 0;
+            yM[0, 3] = 0;
+
+            yM[1, 0] = 0;
+            yM[1, 1] = this.l;
+            yM[1, 2] = 0;
+            yM[1, 3] = 0;
+
+            yM[2, 0] = -3;
+            yM[2, 1] = -2*this.l;
+            yM[2, 2] = 3;
+            yM[2, 3] = -this.l;
+
+            yM[3, 0] = 2;
+            yM[3, 1] = this.l;
+            yM[3, 2] = -2;
+            yM[3, 3] = this.l;
+
+            v = yV * yM * yD;
+
+            // u = uV*uD
+            Vector<double> uV = Vector<double>.Build.Dense(2);
+            Vector<double> uD = Vector<double>.Build.Dense(2);
+
+            uV[0] = 1 - x_adim;
+            uV[1] = x_adim;
+
+            uD[0] = nodalDisplacements[0];
+            uD[1] = nodalDisplacements[3];
+
+            u = uV * uD;
+
+            // Fx = E * (u - u1) / length
+            double length = x_adim * this.l; // distance from node1 to x_adim
+            r[0] = this.E *this.A* u / length;
 
             return r;
         }
