@@ -8,8 +8,17 @@ namespace _2dStructuralFEM_GUI {
 
         public Vector<double> displacements;
         public Vector<double> externalForces;
-        public Vector<double> elementForces;
+        public List<List<double>> elementForces;
 
+        public double maxAbsoluteDisplacement;
+
+        public Solution() {
+            this.elementForces = new List<List<double>>();
+        }
+
+        public void calculateMax(Problem p) {
+            this.maxAbsoluteDisplacement = Math.Max(Math.Abs(p.displacementVector.Maximum()), Math.Abs(p.displacementVector.Minimum()));
+        }
 
         public double getNodeGlobalDisplacement(Node n, char d) {
             if (d == 'x') {
@@ -37,24 +46,24 @@ namespace _2dStructuralFEM_GUI {
             return 0.0;
         }
 
-        public double getElementForce(Element e, string d) {
+        public double getElementLocalForce(Element e, string d) {
             if (d == "x1") {
-                return this.externalForces[e.node1.u_index];
+                return this.elementForces[e.number-1][0];
             }
             if (d == "y1") {
-                return this.externalForces[e.node1.v_index];
+                return this.elementForces[e.number - 1][1];
             }
             if (d == "z1") {
-                return this.externalForces[e.node1.w_index];
+                return this.elementForces[e.number - 1][2];
             }
             if (d == "x2") {
-                return this.externalForces[e.node2.u_index];
+                return this.elementForces[e.number - 1][3];
             }
             if (d == "y2") {
-                return this.externalForces[e.node2.v_index];
+                return this.elementForces[e.number - 1][4];
             }
             if (d == "z2") {
-                return this.externalForces[e.node2.w_index];
+                return this.elementForces[e.number - 1][5];
             }
             return 0.0;
         }

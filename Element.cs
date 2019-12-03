@@ -134,5 +134,32 @@ namespace _2dStructuralFEM_GUI {
             return null;
         }
 
+        // returns forces on point on element
+        // getForces()[0] -> sigma
+        // getForces()[1] -> V
+        // getForces()[2] -> M
+        // using local coordinate system
+        //      positive sigma  : from node1 to node 2
+        //      positive moment : z perendicular, leaving the plane
+        //      positive shear  : z^x=y
+        // 0<=x_adim<=1 (adimensional x)
+        public List<double> getForces(Solution s, double x_adim) {
+            List<double> r = new List<double>();
+            r.Add(0.0);
+            r.Add(0.0);
+            r.Add(0.0);
+
+            double sigmaNode1 = s.getElementLocalForce(this, "x1");
+            double vNode1 = s.getElementLocalForce(this, "y1");
+            double vNode2 = s.getElementLocalForce(this, "y2");
+            double mNode1 = s.getElementLocalForce(this, "z1");
+
+            r[0] = -sigmaNode1;
+            r[1] = vNode1 + x_adim * (vNode2-vNode1);
+            r[2] = mNode1 + x_adim*vNode1+x_adim*x_adim/2.0*(vNode2-vNode1);
+
+            return r;
+        }
+
     }
 }

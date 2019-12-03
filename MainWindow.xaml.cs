@@ -59,7 +59,6 @@ namespace _2dStructuralFEM_GUI {
             series1.Points.Add(new DataPoint(x1, y1));
             series1.Points.Add(new DataPoint(x2, y2));
             series1.TrackerKey = "InvisibleTracker";
-            
             window.plotModel.Series.Add(series1);
 
         }
@@ -172,9 +171,13 @@ namespace _2dStructuralFEM_GUI {
         private void MenuItem_Click(object sender, RoutedEventArgs e) {
             // Create new problem
             this.p = new Problem();
+            this.BC_list.Clear();
+            this.BC_list_nodes.Clear();
+            this.BC_list_type.Clear();
 
             // Clear plot
             this.plotModel.Series.Clear();
+            this.plotModel.Annotations.Clear();
             this.plotModel.InvalidatePlot(true);
 
             // Import input
@@ -287,8 +290,17 @@ namespace _2dStructuralFEM_GUI {
 
             this.plotModel.Series.Clear();
             this.plotModel.Annotations.Clear();
-            int f = 10;// increase displacement factor
-            double d=this.l*0.014;
+
+            double maxElementLengh = 0;
+            for (int i=0; i<Element.all.Count; i++) {
+                if (Element.all[i].l > maxElementLengh) {
+                    maxElementLengh = Element.all[i].l;
+                }
+            }
+
+
+            double f = Math.Round(0.1*maxElementLengh/this.p.solution.maxAbsoluteDisplacement,2);// increase displacement factor
+            double d=this.l*0.014; 
             // add lines
             for (int i = 0; i < Element.all.Count; i++) {
                 addLine(this,Element.all[i].node1.x + p.solution.getNodeGlobalDisplacement(Element.all[i].node1, 'x') * f + d*Math.Cos(Element.all[i].alpha),
@@ -326,12 +338,27 @@ namespace _2dStructuralFEM_GUI {
 
             this.button.Visibility = Visibility.Collapsed;
             this.calculating_text.Visibility = Visibility.Visible;
-            this.calculating_text.Text = "Done!\nFinal structure configuration in red (displacements multiplied by 10)\nHover mouse on red nodes to view results\n";
+            this.calculating_text.Text = "Done!\nFinal structure configuration in red (displacements multiplied by "+f+")\nHover mouse on red nodes to view results\n";
 
+            // text output
+            Console.WriteLine("\n\n\n");
+            Element testElement = Element.all[0];
+            Console.WriteLine(testElement.number);
+            Console.WriteLine(p.solution.getElementLocalForce(testElement, "x1"));
+            Console.WriteLine(p.solution.getElementLocalForce(testElement, "y1"));
+            Console.WriteLine(p.solution.getElementLocalForce(testElement, "z1"));
+            Console.WriteLine(p.solution.getElementLocalForce(testElement, "x2"));
+            Console.WriteLine(p.solution.getElementLocalForce(testElement, "y2"));
+            Console.WriteLine(p.solution.getElementLocalForce(testElement, "z2"));
+            Console.WriteLine("\n\n");
+            for(int i=0; i<=100; i++) {
+                Console.WriteLine(testElement.getForces(p.solution,i/100.0)[2]);
+            }
 
             resultsWindow resultsWindowObj = new resultsWindow();
             resultsWindowObj.TextBox.Text = p.outputText;
             resultsWindowObj.Show();
+
 
         }
     }

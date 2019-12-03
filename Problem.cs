@@ -222,12 +222,25 @@ namespace _2dStructuralFEM_GUI {
             Vector<double> externalForces =this.stiffnessMatrix* displacementVector;
             outputText+=Node.printResults(externalForces, "force");
             this.solution.externalForces=externalForces;
+            
 
             Console.WriteLine("############################################ Element Forces ############################################");
             outputText += "############################################ Element Forces ############################################\n";
             Vector<double> localDisplacementVector = Vector<double>.Build.Dense(6);
             List<int> indexes;
             Vector<double> localForces=null;
+
+            for (int i=0; i<Element.all.Count; i++) {
+                List<double> l = new List<double>();
+                l.Add(0.0);
+                l.Add(0.0);
+                l.Add(0.0);
+                l.Add(0.0);
+                l.Add(0.0);
+                l.Add(0.0);
+                this.solution.elementForces.Add(l);
+            }
+
             foreach (Element e in Element.all) {
                 indexes = e.getIndexes();
                 for (int i = 0; i < 6; i++) {
@@ -238,10 +251,14 @@ namespace _2dStructuralFEM_GUI {
                 // E = del*K - f -> Slide is wrong (Logan Finite Element Book, pdf pg 217
                 localForces = e.getLocalK() * localDisplacementVector - e.getLocal(e.distributedLoadsVector);
                 outputText+=Node.printLocalResults(localForces, e);
+
+                for(int i=0; i<6; i++) {
+                    this.solution.elementForces[e.number - 1][i] = localForces[i];
+                }
+                
             }
 
-            this.solution.elementForces=localForces;
-
+            this.solution.calculateMax(this);
         }
 
     }
