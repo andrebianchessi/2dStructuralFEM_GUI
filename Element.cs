@@ -235,7 +235,7 @@ namespace _2dStructuralFEM_GUI {
             if (ve == 0) {
                 xg_adim = 0;
             }
-            r[2] = -(p.solution.getElementLocalForce(this, "z1") + me + ve*xg_adim - r[1]*x_adim );
+            r[2] = -(p.solution.getElementLocalForce(this, "z1") + me + ve*xg_adim*this.l - r[1]*x_adim*this.l);
 
 
             return r;

@@ -343,14 +343,15 @@ namespace _2dStructuralFEM_GUI {
             // text output
             Element testElement = Element.all[2];
             Console.WriteLine("\n\n\nElement:"+ testElement.number);
-            for(int i=0; i<=100; i++) {
+            for(int i=0; i<=10; i++) {
                 //Console.WriteLine("i: "+ i);
                 //Console.Write("Normal force: ");
-                //Console.WriteLine(testElement.getForces(this.p,i/100.0)[0]);
+                //Console.WriteLine(testElement.getForces(this.p,i/10.0)[0]);
                 //Console.Write("Shear force: ");
-                //Console.WriteLine(testElement.getForces(this.p, i / 100.0)[1]);
-                //Console.Write("Moment: ");
-                Console.WriteLine(testElement.getForces(this.p, i / 100.0)[2]);
+                //Console.WriteLine(testElement.getForces(this.p, i / 10.0)[1]);
+                Console.Write("Moment: ");
+                Console.WriteLine(testElement.getForces(this.p, i / 10.0)[2]);
+                //Console.WriteLine();
                 //Console.WriteLine();
             }
 
