@@ -139,7 +139,7 @@ namespace _2dStructuralFEM_GUI {
         // getForces()[1] -> V
         // getForces()[2] -> M
         // 0<=x_adim<=1 (adimensional x)
-        public List<double> getForces(Solution s, double x_adim) {
+        public List<double> getForces_Displacement(Solution s, double x_adim) {
             List<double> r = new List<double>();
             r.Add(0.0);
             r.Add(0.0);
@@ -155,65 +155,90 @@ namespace _2dStructuralFEM_GUI {
             nodalDisplacements[5] = s.getNodeGlobalDisplacement(this.node2, 'z');
             nodalDisplacements = this.getLocal(nodalDisplacements);
 
+            // TO-DO : Add distributed load correction
             // local displacements at x_adim
             double u;
-            double v;
+            u = (1 - x_adim) * nodalDisplacements[0] + x_adim * nodalDisplacements[3];
 
-            // v = yV*yM*yD
-            Vector<double> yV = Vector<double>.Build.Dense(4);
-            Vector<double> yD = Vector<double>.Build.Dense(4);
-            Matrix<double> yM = Matrix<double>.Build.Dense(4,4);
-            yD[0] = nodalDisplacements[1];
-            yD[1] = nodalDisplacements[2];
-            yD[2] = nodalDisplacements[4];
-            yD[3] = nodalDisplacements[5];
-
-            yV[0] = 1;
-            yV[1] = x_adim;
-            yV[2] = x_adim * x_adim;
-            yV[3] = x_adim * x_adim * x_adim;
-
-            yM[0, 0] = 1;
-            yM[0, 1] = 0;
-            yM[0, 2] = 0;
-            yM[0, 3] = 0;
-
-            yM[1, 0] = 0;
-            yM[1, 1] = this.l;
-            yM[1, 2] = 0;
-            yM[1, 3] = 0;
-
-            yM[2, 0] = -3;
-            yM[2, 1] = -2*this.l;
-            yM[2, 2] = 3;
-            yM[2, 3] = -this.l;
-
-            yM[3, 0] = 2;
-            yM[3, 1] = this.l;
-            yM[3, 2] = -2;
-            yM[3, 3] = this.l;
-
-            v = yV * yM * yD;
-
-            // u = uV*uD
-            Vector<double> uV = Vector<double>.Build.Dense(2);
-            Vector<double> uD = Vector<double>.Build.Dense(2);
-
-            uV[0] = 1 - x_adim;
-            uV[1] = x_adim;
-
-            uD[0] = nodalDisplacements[0];
-            uD[1] = nodalDisplacements[3];
-            
-
-            u = uV * uD;
-
-            // Fx = E * (u - u1) / length
+            // sigma
             double length = x_adim * this.l; // distance from node1 to x_adim
             r[0] = this.E *this.A* (u- nodalDisplacements[0]) / length;
 
+            // M
+            r[2] = this.E * this.I / (this.l * this.l) * ((-6 + 12 * x_adim)* -nodalDisplacements[1] +
+                                                (-4*this.l+6*this.l*x_adim)* -nodalDisplacements[2] +
+                                                (6 - 12 * x_adim) * -nodalDisplacements[4] +
+                                                (-2*this.l + 6 * this.l * x_adim) * -nodalDisplacements[5]  );
+
+            // V
+            r[1] = this.E * this.I / (this.l * this.l * this.l) * ((12) * -nodalDisplacements[1] +
+                                                (6 * this.l) * -nodalDisplacements[2] +
+                                                (-12) * -nodalDisplacements[4] +
+                                                (6 * this.l) * -nodalDisplacements[5]);
+
             return r;
         }
+        public List<double> getForces(Problem p, double x_adim) {
+            List<double> r = new List<double>();
+            r.Add(0.0);
+            r.Add(0.0);
+            r.Add(0.0);
 
+
+            Vector<double> localDistributedForces = Vector<double>.Build.Dense(6);
+            Vector<double> inputGlobalDistributedForces = Vector<double>.Build.Dense(6);
+
+            // get local distributed forces
+            for (int i=0; i<p.inputDistributedLoads.Count; i++) {
+                if (p.inputDistributedLoads[i][0].node == this.node1 && p.inputDistributedLoads[i][1].node == this.node2) {
+                    inputGlobalDistributedForces[0] = p.inputDistributedLoads[i][0].x;
+                    inputGlobalDistributedForces[1] = p.inputDistributedLoads[i][0].y;
+                    inputGlobalDistributedForces[2] = p.inputDistributedLoads[i][0].z;
+                    inputGlobalDistributedForces[3] = p.inputDistributedLoads[i][1].x;
+                    inputGlobalDistributedForces[4] = p.inputDistributedLoads[i][1].y;
+                    inputGlobalDistributedForces[5] = p.inputDistributedLoads[i][1].z;
+                    localDistributedForces += this.getLocal(inputGlobalDistributedForces);
+                }
+                if (p.inputDistributedLoads[i][0].node == this.node2 && p.inputDistributedLoads[i][1].node == this.node1) {
+                    inputGlobalDistributedForces[0] = p.inputDistributedLoads[i][1].x;
+                    inputGlobalDistributedForces[1] = p.inputDistributedLoads[i][1].y;
+                    inputGlobalDistributedForces[2] = p.inputDistributedLoads[i][1].z;
+                    inputGlobalDistributedForces[3] = p.inputDistributedLoads[i][0].x;
+                    inputGlobalDistributedForces[4] = p.inputDistributedLoads[i][0].y;
+                    inputGlobalDistributedForces[5] = p.inputDistributedLoads[i][0].z;
+                    localDistributedForces += this.getLocal(inputGlobalDistributedForces);
+                }
+            }
+            // normal force
+            double n1 = localDistributedForces[0];
+            double n2 = localDistributedForces[3];
+            double nx = n1 + (n2 - n1) * x_adim;
+            double ne = (nx + n1) * x_adim / 2 * this.l;
+            r[0] = -1*(p.solution.getElementLocalForce(this,"x1")+ne);
+
+            // shear force
+            double v1 = localDistributedForces[1];
+            double v2 = localDistributedForces[4];
+            double vx = v1 + (v2 - v1) * x_adim;
+            double ve = (vx + v1) * x_adim / 2 * this.l;
+
+            double xg_adim = x_adim * (v1 + (vx - v1) * 2 / 3.0) / (v1 + vx); //distrib load centroid
+
+            r[1] = p.solution.getElementLocalForce(this, "y1") + ve;
+
+            // moment
+            double m1 = localDistributedForces[2];
+            double m2 = localDistributedForces[5];
+            double mx = m1 + (m2 - m1) * x_adim;
+            double me = (mx + m1) * x_adim / 2 * this.l;
+
+            if (ve == 0) {
+                xg_adim = 0;
+            }
+            r[2] = -(p.solution.getElementLocalForce(this, "z1") + me + ve*xg_adim - r[1]*x_adim );
+
+
+            return r;
+        }
     }
 }
