@@ -10,6 +10,6 @@
         <TextBox Name="TextBox"
          HorizontalScrollBarVisibility="Visible"
          VerticalScrollBarVisibility="Visible"
-         TextWrapping="Wrap" Margin="6,0,-6.4,0.4" />
+         TextWrapping="Wrap" Margin="0,0,-1,-21.6" />
     </Grid>
 </Window>

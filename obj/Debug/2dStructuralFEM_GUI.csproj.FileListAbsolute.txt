@@ -21,3 +21,4 @@ D:\repos\2dStructuralFEM_GUI\bin\Debug\OxyPlot.Wpf.xml
 D:\repos\2dStructuralFEM_GUI\obj\Debug\resultsWindow.g.cs
 D:\repos\2dStructuralFEM_GUI\obj\Debug\2dStructuralFEM_GUI_MarkupCompile.lref
 D:\repos\2dStructuralFEM_GUI\obj\Debug\resultsWindow.baml
+D:\repos\2dStructuralFEM_GUI\bin\Debug\MainWindow.xaml.cs
