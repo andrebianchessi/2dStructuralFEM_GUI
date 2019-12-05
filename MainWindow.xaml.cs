@@ -320,6 +320,7 @@ namespace _2dStructuralFEM_GUI {
                 if (Element.all[i].node1.label == "") {
                     Element.all[i].node1.label = "dx="+p.solution.getNodeGlobalDisplacement(Element.all[i].node1, 'x') + "\n" +
                                              "dy=" + p.solution.getNodeGlobalDisplacement(Element.all[i].node1, 'y') + "\n" +
+                                             "dz=" + p.solution.getNodeGlobalDisplacement(Element.all[i].node1, 'z') + "\n" +
                                              "External force x = " + p.solution.getNodeExternalForce(Element.all[i].node1, 'x') + "\n" +
                                              "External force y = " + p.solution.getNodeExternalForce(Element.all[i].node1, 'y') + "\n" +
                                              "External moment = " + p.solution.getNodeExternalForce(Element.all[i].node1, 'z') + "\n";
@@ -327,6 +328,7 @@ namespace _2dStructuralFEM_GUI {
                 if (Element.all[i].node2.label == "") {
                     Element.all[i].node2.label = "dx = "+p.solution.getNodeGlobalDisplacement(Element.all[i].node2, 'x') + "\n" +
                                              "dy = " + p.solution.getNodeGlobalDisplacement(Element.all[i].node2, 'y') + "\n" +
+                                             "dz = " + p.solution.getNodeGlobalDisplacement(Element.all[i].node2, 'z') + "\n" +
                                              "External force x = " + p.solution.getNodeExternalForce(Element.all[i].node2, 'x') + "\n" +
                                              "External force y = " + p.solution.getNodeExternalForce(Element.all[i].node2, 'y') + "\n" +
                                              "External moment = " + p.solution.getNodeExternalForce(Element.all[i].node2, 'z') + "\n";
@@ -346,7 +348,7 @@ namespace _2dStructuralFEM_GUI {
 
             this.button.Visibility = Visibility.Collapsed;
             this.calculating_text.Visibility = Visibility.Visible;
-            this.calculating_text.Text = "Done!\nFinal structure configuration in red (displacements multiplied by "+f+")\nHover mouse on red nodes to view results\n";
+            this.calculating_text.Text = "Done!\nFinal structure with X and Y displacements multiplied by "+f+"\nHover mouse on red nodes to view results\n";
 
             resultsWindow resultsWindowObj = new resultsWindow();
             resultsWindowObj.TextBox.Text = p.outputText;

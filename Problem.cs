@@ -366,7 +366,7 @@ namespace _2dStructuralFEM_GUI {
             s += "##### Max displacements #####\n";
             s += this.solution.max_absolute_x_nodal_displacement_node.str() + " dx: " + this.solution.max_absolute_x_nodal_displacement +"\n";
             s += this.solution.max_absolute_y_nodal_displacement_node.str() + " dy: " + this.solution.max_absolute_y_nodal_displacement + "\n";
-            s += this.solution.max_absolute_z_nodal_displacement_node.str() + " dz: " + this.solution.max_absolute_x_nodal_displacement + "\n";
+            s += this.solution.max_absolute_z_nodal_displacement_node.str() + " dz: " + this.solution.max_absolute_z_nodal_displacement + "\n";
 
             s += "\n";
             s += "##### Max forces #####\n";
