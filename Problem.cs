@@ -253,6 +253,11 @@ namespace _2dStructuralFEM_GUI {
             List<double> shear = new List<double>();
             List<double> moment = new List<double>();
             for (int i=0; i<Element.all.Count; i++) {
+                forces.Clear();
+                x_adim.Clear();
+                normal.Clear();
+                shear.Clear();
+                moment.Clear();
                 // check if max or min displacement
                 if(Math.Abs(solution.getNodeGlobalDisplacement(Element.all[i].node1, 'x')) >
                             Math.Abs(this.solution.max_absolute_x_nodal_displacement)) {
@@ -287,6 +292,7 @@ namespace _2dStructuralFEM_GUI {
 
                 builder.Append( "\n\n#### Element " + Element.all[i].number + " ####\n");
                 builder.Append("Between " + Element.all[i].node1.str() + " and " + Element.all[i].node2.str() + "\n");
+                builder.Append("A= " + Element.all[i].A + ", I=" + Element.all[i].I + "\n");
                 builder.Append(Element.all[i].node1.str() + " -> x_adim = 0" + "\n");
                 builder.Append(Element.all[i].node2.str() + " -> x_adim = 1" + "\n\n");
 
@@ -357,13 +363,13 @@ namespace _2dStructuralFEM_GUI {
             string s = "";
             s += "######################################### Max. and min. values ###########################################\n";
             s += "Coordinate x_adim is the adimensional x coordinate in each element(x / element length)\n\n";
-            s += "Max displacements:\n";
+            s += "##### Max displacements #####\n";
             s += this.solution.max_absolute_x_nodal_displacement_node.str() + " dx: " + this.solution.max_absolute_x_nodal_displacement +"\n";
             s += this.solution.max_absolute_y_nodal_displacement_node.str() + " dy: " + this.solution.max_absolute_y_nodal_displacement + "\n";
             s += this.solution.max_absolute_z_nodal_displacement_node.str() + " dz: " + this.solution.max_absolute_x_nodal_displacement + "\n";
 
             s += "\n";
-            s += "Max forces:\n";
+            s += "##### Max forces #####\n";
             s += Solution.maxForce(this.solution.maxNormal_element, "Normal force",
                 this.solution.maxNormal, this.solution.maxNormal_x_adim);
             s += Solution.maxForce(this.solution.minNormal_element, "Normal force",

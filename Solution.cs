@@ -113,7 +113,7 @@ namespace _2dStructuralFEM_GUI {
         public static string maxForce(Element element, string label, double magnitude, double x_adim) {
             string s = "";
 
-            s += "Element " + element.number + " between " +element.node1.str() + ", where x_adim = 0, " +
+            s += "Element " + element.number + "\nA="+element.A+", I="+element.I+"\n Between " +element.node1.str() + ", where x_adim = 0, " +
                 " and "+element.node2.str()+ ", where x_adim = 1 " + "\n";
             s += "x_adim = "+x_adim+" -> " + label + "= " + magnitude + "\n\n";
 
