@@ -14,8 +14,6 @@ D:\repos\2dStructuralFEM_GUI\obj\Debug\2dStructuralFEM_GUI.pdb
 D:\repos\2dStructuralFEM_GUI\bin\Debug\MathNet.Numerics.dll
 D:\repos\2dStructuralFEM_GUI\bin\Debug\MathNet.Numerics.xml
 D:\repos\2dStructuralFEM_GUI\obj\Debug\2dStructuralFEM_GUI.csproj.CopyComplete
-D:\repos\2dStructuralFEM_GUI\bin\Debug\input.txt
-D:\repos\2dStructuralFEM_GUI\obj\Debug\2dStructuralFEM_GUI_Content.g.cs
 D:\repos\2dStructuralFEM_GUI\bin\Debug\OxyPlot.dll
 D:\repos\2dStructuralFEM_GUI\bin\Debug\OxyPlot.Wpf.dll
 D:\repos\2dStructuralFEM_GUI\bin\Debug\OxyPlot.xml

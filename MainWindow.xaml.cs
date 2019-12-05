@@ -196,9 +196,8 @@ namespace _2dStructuralFEM_GUI {
             // show and hide components plot
             this.plot.Visibility = Visibility.Visible;
             this.button.Visibility = Visibility.Visible;
-            this.calculating_text.Visibility = Visibility.Collapsed;
-
-   
+            this.calculating_text.Visibility = Visibility.Visible;
+            this.calculating_text.Text = "Hover mouse on blue nodes to view boundary condition\n";
 
 
             double xmin, xmax, ymin, ymax;
@@ -282,8 +281,15 @@ namespace _2dStructuralFEM_GUI {
         // Solve
         private void button_Click(object sender, RoutedEventArgs e) {
             // Build and solve problem
+            this.calculating_text.Text = "Calculating ...";
             this.button.Visibility = Visibility.Hidden;
             this.calculating_text.Visibility = Visibility.Visible;
+            this.InvalidateVisual();
+            this.UpdateLayout();
+
+            this.button.InvalidateVisual();
+            this.calculating_text.InvalidateVisual();
+
             this.p.buildProblem();
             this.p.solve();
             this.p.postProcess();
@@ -298,8 +304,8 @@ namespace _2dStructuralFEM_GUI {
                 }
             }
 
-
-            double f = Math.Round(0.1*maxElementLengh/this.p.solution.maxAbsoluteDisplacement,2);// increase displacement factor
+            double maxDisp = Math.Max(this.p.solution.max_absolute_x_nodal_displacement, this.p.solution.max_absolute_y_nodal_displacement);
+            double f = Math.Round(0.1*maxElementLengh/maxDisp,2);// increase displacement factor
             double d=this.l*0.014; 
             // add lines
             for (int i = 0; i < Element.all.Count; i++) {
@@ -339,21 +345,6 @@ namespace _2dStructuralFEM_GUI {
             this.button.Visibility = Visibility.Collapsed;
             this.calculating_text.Visibility = Visibility.Visible;
             this.calculating_text.Text = "Done!\nFinal structure configuration in red (displacements multiplied by "+f+")\nHover mouse on red nodes to view results\n";
-
-            // text output
-            Element testElement = Element.all[2];
-            Console.WriteLine("\n\n\nElement:"+ testElement.number);
-            for(int i=0; i<=10; i++) {
-                //Console.WriteLine("i: "+ i);
-                //Console.Write("Normal force: ");
-                //Console.WriteLine(testElement.getForces(this.p,i/10.0)[0]);
-                //Console.Write("Shear force: ");
-                //Console.WriteLine(testElement.getForces(this.p, i / 10.0)[1]);
-                Console.Write("Moment: ");
-                Console.WriteLine(testElement.getForces(this.p, i / 10.0)[2]);
-                //Console.WriteLine();
-                //Console.WriteLine();
-            }
 
             resultsWindow resultsWindowObj = new resultsWindow();
             resultsWindowObj.TextBox.Text = p.outputText;

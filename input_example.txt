@@ -1,8 +1,8 @@
 # Blank lines and lines starting with '#' are ignored
 # Lines end with 'new line'
 #
-# Add bar element:
-# addElement(bar, x1, y1, x2, y2, E, A, I)
+# Add frame element:
+# addElement(frame, x1, y1, x2, y2, E, A, I)
 #
 # Add Boundary condition:
 # addBC(x, y, type, displacement)
@@ -18,9 +18,9 @@
 # debug(true)
 #
 # Example:
-# addElement(bar, 0, -3, 0, 0, 21000, 0.0225, 0.0000421875)
-# addElement(bar,0, 3, 0, 0, 21000, 0.0225, 0.0000421875)
-# addElement(bar,0, 0, 3.2, 0, 21000, 0.0225, 0.0000421875)
+# addElement(frame, 0, -3, 0, 0, 21000, 0.0225, 0.0000421875)
+# addElement(frame,0, 3, 0, 0, 21000, 0.0225, 0.0000421875)
+# addElement(frame,0, 0, 3.2, 0, 21000, 0.0225, 0.0000421875)
 #
 # addForce(0,0,-8,90,3.2,0,-8,90,false)
 # addForce(0,0,50,0,false)
@@ -30,9 +30,9 @@
 # addBC(3.2, 0, fix)
 # debug(true)
 
-addElement(bar,0,-3,0,0,21000000,0.0225,0.0000421875)
-addElement(bar,0,0,0,3,21000000,0.0225,0.0000421875)
-addElement(bar,0,0,3.2,0,21000000,0.0225,0.0000421875)
+addElement(frame,0,-3,0,0,21000000,0.0225,0.0000421875)
+addElement(frame,0,0,0,3,21000000,0.0225,0.0000421875)
+addElement(frame,0,0,3.2,0,21000000,0.0225,0.0000421875)
 
 addForce(0,0,50000,0,false)
 addForce(0,0,8000,-90,3.2,0,8000,-90,false)

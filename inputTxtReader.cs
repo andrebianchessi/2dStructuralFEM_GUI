@@ -40,7 +40,7 @@ namespace _2dStructuralFEM_GUI {
                     if (line.Substring(0, 11) == "addElement(") {
                         line = line.Substring(11);
                         pars = line.Split(',');
-                        if (pars[0] == "bar") {
+                        if (pars[0] == "frame") {
                             p.addElement(pars[0], Convert.ToDouble(pars[1]), Convert.ToDouble(pars[2]),
                             Convert.ToDouble(pars[3]), Convert.ToDouble(pars[4]), Convert.ToDouble(pars[5]),
                             Convert.ToDouble(pars[6]), Convert.ToDouble(pars[7]));

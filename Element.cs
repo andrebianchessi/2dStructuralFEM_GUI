@@ -79,7 +79,7 @@ namespace _2dStructuralFEM_GUI {
         public Matrix<double> getLocalK() {
             var k = Matrix<double>.Build.Dense(6, 6);
 
-            if (this.type == "bar") {
+            if (this.type == "frame") {
                 double eal1 = this.E * this.A / this.l;  // E*A/l
                 double eil1 = this.E * this.I / this.l;  // E*I/l
                 double eil2 = eil1 / this.l;             // E*I/l^2

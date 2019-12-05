@@ -42,7 +42,7 @@
                     VerticalAlignment="Bottom"
                     Content="Solve"
                     Padding="5"
-                    Margin="0,5,330,50"
+                    Margin="0,5,330,0"
                     Visibility="Hidden" Click="button_Click"/>
 
                     <TextBlock VerticalAlignment="Bottom" x:Name="calculating_text" FontSize="15" Visibility="Collapsed">Calculating ...</TextBlock>

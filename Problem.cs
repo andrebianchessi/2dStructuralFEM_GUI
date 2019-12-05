@@ -17,12 +17,11 @@ namespace _2dStructuralFEM_GUI {
         public List<Load> inputConcentratedLoads;
         public List<List<Load>> inputDistributedLoads;
 
-        public string outputText;
-
-
         public Matrix<double> stiffnessMatrix_BC; // stiff. matrix with BC applied
 
         public bool debug;
+
+        public string outputText;
 
         public Problem() {
             this.solution = new Solution();
@@ -149,8 +148,6 @@ namespace _2dStructuralFEM_GUI {
             foreach (Element e in Element.all) {
                 Matrix<double> k = e.getGlobalK();
                 if (this.debug) {
-                    Console.WriteLine("Element " + e.number + " global stiffness matrix:");
-                    Console.WriteLine(k);
                     outputText += "Element " + e.number.ToString() + " global stiffness matrix:\n";
                     outputText += k.ToString()+"\n";
                 }
@@ -161,8 +158,6 @@ namespace _2dStructuralFEM_GUI {
                 }
             }
             if (this.debug) {
-                Console.WriteLine("Stiffness matrix:");
-                Console.WriteLine(this.stiffnessMatrix);
                 outputText += "Stiffness matrix:\n";
                 outputText += this.stiffnessMatrix.ToString() + "\n";
             }
@@ -176,8 +171,6 @@ namespace _2dStructuralFEM_GUI {
             }
 
             if (this.debug) {
-                Console.WriteLine("Load vector:");
-                Console.WriteLine(this.loadVector);
                 outputText += "Load vector:\n";
                 outputText += this.loadVector.ToString() + "\n";
             }
@@ -195,12 +188,7 @@ namespace _2dStructuralFEM_GUI {
             }
 
             if (this.debug) {
-                Console.WriteLine("Stiffness matrix with Boundary Conditions");
-                Console.WriteLine(this.stiffnessMatrix_BC);
-                Console.WriteLine("Load vector with Boundary Conditions");
-                Console.WriteLine(this.loadVector);
-                Console.WriteLine("\n\n\n\n\n\n");
-
+                
                 outputText += "Stiffness matrix with Boundary Conditions:\n";
                 outputText += this.stiffnessMatrix_BC.ToString() + "\n";
                 outputText += "Load vector with Boundary Conditions:\n";
@@ -210,22 +198,21 @@ namespace _2dStructuralFEM_GUI {
         public void solve() {
             this.displacementVector = Vector<double>.Build.Dense(Node.all.Count * 3);
             this.stiffnessMatrix_BC.Solve(this.loadVector).CopyTo(this.displacementVector);
-            Console.WriteLine("############################################ Displacements: ############################################");
-            outputText += "############################################ Displacements: ############################################\n";
+            outputText += "############################################ Displacements ############################################\n";
             outputText+=Node.printResults(this.displacementVector, "displacement");
             this.solution.displacements=displacementVector;
         }
 
         public void postProcess() {
-            Console.WriteLine("######################################### External Nodal Forces #########################################");
-            outputText += "######################################### External Nodal Forces ##########################################\n";
+            StringBuilder builder = new StringBuilder();
+            builder.Append("######################################### External Nodal Forces ##########################################\n");
             Vector<double> externalForces =this.stiffnessMatrix* displacementVector;
-            outputText+=Node.printResults(externalForces, "force");
+            builder.Append(Node.printResults(externalForces, "force"));
             this.solution.externalForces=externalForces;
             
 
-            Console.WriteLine("############################################ Element Forces ############################################");
-            outputText += "############################################ Element Forces ############################################\n";
+            builder.Append("############################################ Element Forces ############################################\n");
+            builder.Append("Coordinate x_adim is the adimensional x coordinate in each element ( x / element length)\n\n\n");
             Vector<double> localDisplacementVector = Vector<double>.Build.Dense(6);
             List<int> indexes;
             Vector<double> localForces=null;
@@ -248,9 +235,9 @@ namespace _2dStructuralFEM_GUI {
                 }
                 localDisplacementVector = e.getLocal(localDisplacementVector);
 
-                // E = del*K - f -> Slide is wrong (Logan Finite Element Book, pdf pg 217
+                
                 localForces = e.getLocalK() * localDisplacementVector - e.getLocal(e.distributedLoadsVector);
-                outputText+=Node.printLocalResults(localForces, e);
+                
 
                 for(int i=0; i<6; i++) {
                     this.solution.elementForces[e.number - 1][i] = localForces[i];
@@ -258,7 +245,140 @@ namespace _2dStructuralFEM_GUI {
                 
             }
 
-            this.solution.calculateMax(this);
+            // calculate local force distribution
+            int divisions = 100;
+            List<double> forces = new List<double>();
+            List<double> x_adim = new List<double>();
+            List<double> normal = new List<double>();
+            List<double> shear = new List<double>();
+            List<double> moment = new List<double>();
+            for (int i=0; i<Element.all.Count; i++) {
+                // check if max or min displacement
+                if(Math.Abs(solution.getNodeGlobalDisplacement(Element.all[i].node1, 'x')) >
+                            Math.Abs(this.solution.max_absolute_x_nodal_displacement)) {
+                    this.solution.max_absolute_x_nodal_displacement = solution.getNodeGlobalDisplacement(Element.all[i].node1, 'x');
+                    this.solution.max_absolute_x_nodal_displacement_node = Element.all[i].node1;
+                }
+                if (Math.Abs(solution.getNodeGlobalDisplacement(Element.all[i].node1, 'y')) >
+                            Math.Abs(this.solution.max_absolute_y_nodal_displacement)) {
+                    this.solution.max_absolute_y_nodal_displacement = solution.getNodeGlobalDisplacement(Element.all[i].node1, 'y');
+                    this.solution.max_absolute_y_nodal_displacement_node = Element.all[i].node1;
+                }
+                if (Math.Abs(solution.getNodeGlobalDisplacement(Element.all[i].node1, 'z')) >
+                            Math.Abs(this.solution.max_absolute_z_nodal_displacement)) {
+                    this.solution.max_absolute_z_nodal_displacement = solution.getNodeGlobalDisplacement(Element.all[i].node1, 'z');
+                    this.solution.max_absolute_z_nodal_displacement_node = Element.all[i].node1;
+                }
+                if (Math.Abs(solution.getNodeGlobalDisplacement(Element.all[i].node2, 'x')) >
+                            Math.Abs(this.solution.max_absolute_x_nodal_displacement)) {
+                    this.solution.max_absolute_x_nodal_displacement = solution.getNodeGlobalDisplacement(Element.all[i].node2, 'x');
+                    this.solution.max_absolute_x_nodal_displacement_node = Element.all[i].node2;
+                }
+                if (Math.Abs(solution.getNodeGlobalDisplacement(Element.all[i].node2, 'y')) >
+                            Math.Abs(this.solution.max_absolute_y_nodal_displacement)) {
+                    this.solution.max_absolute_y_nodal_displacement = solution.getNodeGlobalDisplacement(Element.all[i].node2, 'y');
+                    this.solution.max_absolute_y_nodal_displacement_node = Element.all[i].node2;
+                }
+                if (Math.Abs(solution.getNodeGlobalDisplacement(Element.all[i].node2, 'z')) >
+                            Math.Abs(this.solution.max_absolute_z_nodal_displacement)) {
+                    this.solution.max_absolute_z_nodal_displacement = solution.getNodeGlobalDisplacement(Element.all[i].node2, 'z');
+                    this.solution.max_absolute_z_nodal_displacement_node = Element.all[i].node2;
+                }
+
+                builder.Append( "#### Element " + Element.all[i].number + " ####\n");
+                builder.Append("Between " + Element.all[i].node1.str() + " and " + Element.all[i].node2.str() + "\n");
+                builder.Append(Element.all[i].node1.str() + " -> x_adim = 0" + "\n");
+                builder.Append(Element.all[i].node2.str() + " -> x_adim = 1" + "\n\n");
+
+                // calculate forces at each point
+                for (int j = 0; j <= divisions; j++) {
+                    
+                    x_adim.Add(j / (divisions+0.0));
+                    forces = Element.all[i].getForces(this, j / (divisions+0.0));
+                    
+                    normal.Add(forces[0]);
+                    shear.Add(forces[1]);
+                    moment.Add(forces[2]);
+
+                    // check if max or min
+                    // normal
+                    if (forces[0] > this.solution.maxNormal) {
+                        this.solution.maxNormal = forces[0];
+                        this.solution.maxNormal_element = Element.all[i];
+                        this.solution.maxNormal_x_adim = j / (divisions + 0.0);
+                    }
+                    if (forces[0] < this.solution.minNormal) {
+                        this.solution.minNormal = forces[0];
+                        this.solution.minNormal_element = Element.all[i];
+                        this.solution.minNormal_x_adim = j / (divisions + 0.0);
+                    }
+
+                    // shear
+                    if (forces[1] > this.solution.maxShear) {
+                        this.solution.maxShear = forces[1];
+                        this.solution.maxShear_element = Element.all[i];
+                        this.solution.maxShear_x_adim = j / (divisions + 0.0);
+                    }
+                    if (forces[1] < this.solution.minShear) {
+                        this.solution.minShear = forces[1];
+                        this.solution.minShear_element = Element.all[i];
+                        this.solution.minShear_x_adim = j / (divisions + 0.0);
+                    }
+
+                    // moment
+                    if (forces[2] > this.solution.maxMoment) {
+                        this.solution.maxMoment = forces[2];
+                        this.solution.maxMoment_element = Element.all[i];
+                        this.solution.maxMoment_x_adim = j / (divisions + 0.0);
+                    }
+                    if (forces[2] < this.solution.minMoment) {
+                        this.solution.minMoment = forces[2];
+                        this.solution.minMoment_element = Element.all[i];
+                        this.solution.minMoment_x_adim = j / (divisions + 0.0);
+                    }
+
+                }
+
+                builder.Append("CSV  format forces diagram:\n");
+
+                builder.Append("x_adim, Normal force, Shear force, Moment\n");
+                for(int j = 0; j<normal.Count; j++) {
+                    builder.Append(x_adim[j] + ", " + normal[j] + ", " + shear[j] + ", " +moment[j] +"\n");
+                }
+
+                outputText += builder.ToString() + "\n\n\n";
+
+
+            }
+
+            // max and min
+            string s = "";
+            s += "######################################### Max. and min. values ###########################################\n";
+            s += "Coordinate x_adim is the adimensional x coordinate in each element(x / element length)\n\n";
+            s += "Max displacements:\n";
+            s += this.solution.max_absolute_x_nodal_displacement_node.str() + " dx: " + this.solution.max_absolute_x_nodal_displacement +"\n";
+            s += this.solution.max_absolute_y_nodal_displacement_node.str() + " dy: " + this.solution.max_absolute_y_nodal_displacement + "\n";
+            s += this.solution.max_absolute_z_nodal_displacement_node.str() + " dz: " + this.solution.max_absolute_x_nodal_displacement + "\n";
+
+            s += "\n";
+            s += "Max forces:\n";
+            s += Solution.maxForce(this.solution.maxNormal_element, "Normal force",
+                this.solution.maxNormal, this.solution.maxNormal_x_adim);
+            s += Solution.maxForce(this.solution.minNormal_element, "Normal force",
+                this.solution.minNormal, this.solution.minNormal_x_adim);
+
+            s += Solution.maxForce(this.solution.maxShear_element, "Shear force",
+                this.solution.maxShear, this.solution.maxShear_x_adim);
+            s += Solution.maxForce(this.solution.minShear_element, "Shear force",
+                this.solution.minShear, this.solution.minShear_x_adim);
+
+            s += Solution.maxForce(this.solution.maxMoment_element, "Moment force",
+                this.solution.maxMoment, this.solution.maxMoment_x_adim);
+            s += Solution.maxForce(this.solution.minMoment_element, "Moment force",
+                this.solution.minMoment, this.solution.minMoment_x_adim);
+
+            outputText = s + "\n\n" +outputText;
+
         }
 
     }

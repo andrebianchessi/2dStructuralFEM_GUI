@@ -62,18 +62,13 @@ namespace _2dStructuralFEM_GUI {
         public static string printResults(Vector<double> results, string keyWord) {
             string r = "";
             foreach (Node n in Node.all) {
-                Console.WriteLine(n.str());
-                Console.WriteLine("\tX direction "+keyWord+": " + results[n.u_index]);
-                Console.WriteLine("\tY direction "+keyWord+": " + results[n.v_index]);
                 r += n.str() + "\n";
                 r += "\tX direction " + keyWord + ": " + results[n.u_index] + "\n";
                 r += "\tY direction " + keyWord + ": " + results[n.v_index] + "\n";
                 if (keyWord == "displacement") {
-                    Console.WriteLine("\tZ direction rotation: " + results[n.w_index] + "\n");
                     r += "\tZ direction rotation: " + results[n.w_index] + "\n";
                 }
                 if (keyWord == "force") {
-                    Console.WriteLine("\tZ direction torque: " + results[n.w_index] + "\n");
                     r += "\tZ direction torque: " + results[n.w_index] + "\n";
                 }
             }
@@ -82,30 +77,19 @@ namespace _2dStructuralFEM_GUI {
 
         public static string printLocalResults(Vector<double> forces, Element element) {
             string r = "";
-            Console.WriteLine("Element "+element.number+" between " + element.node1.str() +" and "+ element.node2.str());
-            Console.WriteLine("Z Direction: Leaving the plane");
-            Console.WriteLine("X Direction: From "+element.node1.str()+" to "+ element.node2.str());
-            Console.WriteLine("Y Direction: z^x=y");
             r += "Element " + element.number + " between " + element.node1.str() + " and " + element.node2.str() + "\n";
             r += "Z Direction: Leaving the plane\n";
             r += "X Direction: From " + element.node1.str() + " to " + element.node2.str() + "\n";
             r += "Y Direction: z^x=y\n";
 
             foreach (Node n in element.nodes) {
-                Console.WriteLine("\t"+n.str());
                 r += "\t" + n.str() + "\n";
                 if (n == element.node1) {
-                    Console.WriteLine("\t\tLocal X direction force: " + forces[0]);
-                    Console.WriteLine("\t\tLocal Y direction force: " + forces[1]);
-                    Console.WriteLine("\t\tZ direction torque: " + forces[2] + "\n");
                     r += "\t\tLocal X direction force: " + forces[0] + "\n";
                     r += "\t\tLocal Y direction force: " + forces[1] + "\n";
                     r += "\t\tZ direction torque: " + forces[2] + "\n\n";
                 }
                 if (n == element.node2) {
-                    Console.WriteLine("\t\tLocal X direction force: " + forces[3]);
-                    Console.WriteLine("\t\tLocal Y direction force: " + forces[4]);
-                    Console.WriteLine("\t\tZ direction torque: " + forces[5] + "\n");
                     r += "\t\tLocal X direction force: " + forces[3]+"\n";
                     r += "\t\tLocal Y direction force: " + forces[4]+"\n";
                     r += "\t\tZ direction torque: " + forces[5] + "\n\n";
