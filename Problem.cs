@@ -211,8 +211,8 @@ namespace _2dStructuralFEM_GUI {
             this.solution.externalForces=externalForces;
             
 
-            builder.Append("############################################ Element Forces ############################################\n");
-            builder.Append("Coordinate x_adim is the adimensional x coordinate in each element ( x / element length)\n\n\n");
+            builder.Append("######################################## Element Forces Diagram ########################################\n");
+            builder.Append("Coordinate x_adim is the adimensional x coordinate in each element ( x / element length)\n");
             Vector<double> localDisplacementVector = Vector<double>.Build.Dense(6);
             List<int> indexes;
             Vector<double> localForces=null;
@@ -285,7 +285,7 @@ namespace _2dStructuralFEM_GUI {
                     this.solution.max_absolute_z_nodal_displacement_node = Element.all[i].node2;
                 }
 
-                builder.Append( "#### Element " + Element.all[i].number + " ####\n");
+                builder.Append( "\n\n#### Element " + Element.all[i].number + " ####\n");
                 builder.Append("Between " + Element.all[i].node1.str() + " and " + Element.all[i].node2.str() + "\n");
                 builder.Append(Element.all[i].node1.str() + " -> x_adim = 0" + "\n");
                 builder.Append(Element.all[i].node2.str() + " -> x_adim = 1" + "\n\n");
@@ -346,10 +346,12 @@ namespace _2dStructuralFEM_GUI {
                     builder.Append(x_adim[j] + ", " + normal[j] + ", " + shear[j] + ", " +moment[j] +"\n");
                 }
 
-                outputText += builder.ToString() + "\n\n\n";
+            
 
 
             }
+
+            outputText += builder.ToString() + "\n\n\n";
 
             // max and min
             string s = "";
