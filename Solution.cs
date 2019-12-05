@@ -114,7 +114,7 @@ namespace _2dStructuralFEM_GUI {
             string s = "";
 
             s += "Element " + element.number + " between " +element.node1.str() + ", where x_adim = 0, " +
-                " and "+element.node1.str()+ ", where x_adim = 1, " + "\n";
+                " and "+element.node2.str()+ ", where x_adim = 1, " + "\n";
             s += "x_adim = "+x_adim+" -> " + label + "= " + magnitude + "\n\n";
 
             return s;
