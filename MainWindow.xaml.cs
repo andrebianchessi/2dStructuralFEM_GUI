@@ -17,6 +17,8 @@ using OxyPlot;
 using OxyPlot.Series;
 using OxyPlot.Annotations;
 using OxyPlot.Axes;
+using System.Windows.Threading;
+
 
 namespace _2dStructuralFEM_GUI {
     /// <summary>
@@ -284,11 +286,11 @@ namespace _2dStructuralFEM_GUI {
             this.calculating_text.Text = "Calculating ...";
             this.button.Visibility = Visibility.Hidden;
             this.calculating_text.Visibility = Visibility.Visible;
-            this.InvalidateVisual();
-            this.UpdateLayout();
 
-            this.button.InvalidateVisual();
-            this.calculating_text.InvalidateVisual();
+            this.InvalidateVisual();
+            ForceUIToUpdate();
+
+
 
             this.p.buildProblem();
             this.p.solve();
@@ -351,6 +353,15 @@ namespace _2dStructuralFEM_GUI {
             resultsWindowObj.Show();
 
 
+        }
+        public static void ForceUIToUpdate() {
+            DispatcherFrame frame = new DispatcherFrame();
+            Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Render, new DispatcherOperationCallback(delegate (object parameter)
+            {
+                frame.Continue = false;
+                return null;
+            }), null);
+            Dispatcher.PushFrame(frame);
         }
     }
 }
