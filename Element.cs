@@ -23,6 +23,8 @@ namespace _2dStructuralFEM_GUI {
         public Vector<double> distributedLoadsVector;
 
         public string type;
+
+        // create frame element
         public Element(string type, Node node1, Node node2, double E, double A, double I) {
             this.type = type;
 
@@ -32,6 +34,28 @@ namespace _2dStructuralFEM_GUI {
             this.E = E;
             this.A = A;
             this.I = I;
+            this.l = Math.Sqrt(Math.Pow((node2.y - node1.y), 2) + Math.Pow((node2.x - node1.x), 2));
+
+            this.alpha = Math.Atan((node2.y - node1.y) / (node2.x - node1.x));
+
+            Element.all.Add(this);
+            this.number = Element.all.Count;
+
+            this.nodes = new List<Node>() { node1, node2 };
+
+            this.distributedLoadsVector = Vector<double>.Build.Dense(6);
+        }
+
+        // create truss element
+        public Element(string type, Node node1, Node node2, double E, double A) {
+            this.type = type;
+
+            this.node1 = node1;
+            this.node2 = node2;
+
+            this.E = E;
+            this.A = A;
+            this.I = 1;
             this.l = Math.Sqrt(Math.Pow((node2.y - node1.y), 2) + Math.Pow((node2.x - node1.x), 2));
 
             this.alpha = Math.Atan((node2.y - node1.y) / (node2.x - node1.x));
@@ -107,7 +131,21 @@ namespace _2dStructuralFEM_GUI {
                 }
 
             }
-            
+
+            if (this.type == "truss") {
+                double eil1 = this.E * this.A / this.l;  // E*I/l
+
+                k[0, 0] = eil1;
+                k[0, 3] = -eil1;
+                k[3, 0] = -eil1;
+                k[3, 3] = eil1;
+
+                k[2, 2] = 1;
+                k[5, 5] = 1;
+
+            }
+
+
             return k;
         }
 
@@ -134,50 +172,7 @@ namespace _2dStructuralFEM_GUI {
             return null;
         }
 
-        // returns forces on point on element
-        // getForces()[0] -> sigma
-        // getForces()[1] -> V
-        // getForces()[2] -> M
-        // 0<=x_adim<=1 (adimensional x)
-        public List<double> getForces_Displacement(Solution s, double x_adim) {
-            List<double> r = new List<double>();
-            r.Add(0.0);
-            r.Add(0.0);
-            r.Add(0.0);
-
-            Vector<double> nodalDisplacements = Vector<double>.Build.Dense(6);
-            Vector<double> displacement = Vector<double>.Build.Dense(6);
-            nodalDisplacements[0] = s.getNodeGlobalDisplacement(this.node1, 'x');
-            nodalDisplacements[1] = s.getNodeGlobalDisplacement(this.node1, 'y');
-            nodalDisplacements[2] = s.getNodeGlobalDisplacement(this.node1, 'z');
-            nodalDisplacements[3] = s.getNodeGlobalDisplacement(this.node2, 'x');
-            nodalDisplacements[4] = s.getNodeGlobalDisplacement(this.node2, 'y');
-            nodalDisplacements[5] = s.getNodeGlobalDisplacement(this.node2, 'z');
-            nodalDisplacements = this.getLocal(nodalDisplacements);
-
-            // TO-DO : Add distributed load correction
-            // local displacements at x_adim
-            double u;
-            u = (1 - x_adim) * nodalDisplacements[0] + x_adim * nodalDisplacements[3];
-
-            // sigma
-            double length = x_adim * this.l; // distance from node1 to x_adim
-            r[0] = this.E *this.A* (u- nodalDisplacements[0]) / length;
-
-            // M
-            r[2] = this.E * this.I / (this.l * this.l) * ((-6 + 12 * x_adim)* -nodalDisplacements[1] +
-                                                (-4*this.l+6*this.l*x_adim)* -nodalDisplacements[2] +
-                                                (6 - 12 * x_adim) * -nodalDisplacements[4] +
-                                                (-2*this.l + 6 * this.l * x_adim) * -nodalDisplacements[5]  );
-
-            // V
-            r[1] = this.E * this.I / (this.l * this.l * this.l) * ((12) * -nodalDisplacements[1] +
-                                                (6 * this.l) * -nodalDisplacements[2] +
-                                                (-12) * -nodalDisplacements[4] +
-                                                (6 * this.l) * -nodalDisplacements[5]);
-
-            return r;
-        }
+        
         public List<double> getForces(Problem p, double x_adim) {
             List<double> r = new List<double>();
             r.Add(0.0);

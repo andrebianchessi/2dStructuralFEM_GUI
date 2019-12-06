@@ -38,11 +38,18 @@ namespace _2dStructuralFEM_GUI {
 
         }
 
-        // create element
+        // create frame element
         public void addElement(string type, double x1, double y1, double x2, double y2, double E, double A, double I) {
             Node n1 = Node.getNode(x1, y1);
             Node n2 = Node.getNode(x2, y2);
             new Element(type, n1, n2, E, A, I);
+        }
+
+        // create truss element
+        public void addElement(string type, double x1, double y1, double x2, double y2, double E, double A) {
+            Node n1 = Node.getNode(x1, y1);
+            Node n2 = Node.getNode(x2, y2);
+            new Element(type, n1, n2, E, A);
         }
 
         // create concentrated force
@@ -246,6 +253,15 @@ namespace _2dStructuralFEM_GUI {
             }
 
             // calculate local force distribution
+            this.solution.max_absolute_x_nodal_displacement_node = Element.all[0].node1;
+            this.solution.max_absolute_y_nodal_displacement_node = Element.all[0].node1;
+            this.solution.max_absolute_z_nodal_displacement_node = Element.all[0].node1;
+            this.solution.minNormal_element = Element.all[0];
+            this.solution.maxNormal_element = Element.all[0];
+            this.solution.minShear_element = Element.all[0];
+            this.solution.maxShear_element = Element.all[0];
+            this.solution.minMoment_element = Element.all[0];
+            this.solution.maxMoment_element = Element.all[0];
             int divisions = 100;
             List<double> forces = new List<double>();
             List<double> x_adim = new List<double>();

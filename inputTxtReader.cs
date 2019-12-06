@@ -45,6 +45,11 @@ namespace _2dStructuralFEM_GUI {
                             Convert.ToDouble(pars[3]), Convert.ToDouble(pars[4]), Convert.ToDouble(pars[5]),
                             Convert.ToDouble(pars[6]), Convert.ToDouble(pars[7]));
                         }
+                        if (pars[0] == "truss") {
+                            p.addElement(pars[0], Convert.ToDouble(pars[1]), Convert.ToDouble(pars[2]),
+                            Convert.ToDouble(pars[3]), Convert.ToDouble(pars[4]), Convert.ToDouble(pars[5]),
+                            Convert.ToDouble(pars[6]));
+                        }
                         line = "###############";
                     }
 

@@ -307,7 +307,11 @@ namespace _2dStructuralFEM_GUI {
             }
 
             double maxDisp = Math.Max(this.p.solution.max_absolute_x_nodal_displacement, this.p.solution.max_absolute_y_nodal_displacement);
-            double f = Math.Round(0.05*maxElementLengh/maxDisp,2);// increase displacement factor
+            double f = Math.Abs(Math.Round(0.05*maxElementLengh/maxDisp,2));// increase displacement factor
+            if (f > 10000) {
+                f = 10000;
+            }
+            
             double d=this.l*0.014; 
             // add lines
             for (int i = 0; i < Element.all.Count; i++) {
