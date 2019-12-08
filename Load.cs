@@ -56,8 +56,8 @@ namespace _2dStructuralFEM_GUI {
             this.magnitude = magnitude;
             this.alpha = null;
 
-            this.x = 0;
-            this.y = 0;
+            this.x = node.x;
+            this.y = node.y;
             this.z = magnitude;
 
             this.elements = new List<Element>();

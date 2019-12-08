@@ -111,7 +111,7 @@ namespace _2dStructuralFEM_GUI {
                     s += this.BC_list_type[this.BC_list_nodes.IndexOf(l.node)] + "\n";
                 }
                 s += "Moment (z axis)=" + l.magnitude;
-                addNode(window, l.x, l.y, s, circleSize, color);
+                addNode(window, l.x, l.y, s, circleSize*0.7, color);
                 List<double> r = new List<double>();
                 r.Add(l.node.x);
                 r.Add(l.node.y);
@@ -201,7 +201,7 @@ namespace _2dStructuralFEM_GUI {
             this.calculating_text.Visibility = Visibility.Visible;
             this.calculating_text.Text = "Hover mouse on blue nodes to view boundary condition\n";
 
-
+            // determine max X Y
             double xmin, xmax, ymin, ymax;
             xmin = Node.all[0].x;
             xmax = Node.all[0].x;
@@ -228,7 +228,7 @@ namespace _2dStructuralFEM_GUI {
             
             // determine maxLoadMagnitude and arrowUnitLenght to scale loads
             double maxLoadMagnitude = 0;
-            double arrowUnitLength = this.l * 0.1;
+            double arrowUnitLength = 3.5;
             for (int i = 0; i < p.inputConcentratedLoads.Count; i++) {
                 if (p.inputConcentratedLoads[i].magnitude > maxLoadMagnitude && p.inputConcentratedLoads[i].alpha != null) {
                     maxLoadMagnitude = p.inputConcentratedLoads[i].magnitude;
@@ -269,8 +269,8 @@ namespace _2dStructuralFEM_GUI {
 
             // add loads
             for (int i=0; i<p.inputConcentratedLoads.Count; i++) {
-            addLoad(this, p.inputConcentratedLoads[i], OxyColors.Aqua, circleSize : 5,
-                maxLoadMagnitude:maxLoadMagnitude,arrowUnitLength: arrowUnitLength);
+                addLoad(this, p.inputConcentratedLoads[i], OxyColors.Aqua, circleSize : 5,
+                    maxLoadMagnitude:maxLoadMagnitude,arrowUnitLength: arrowUnitLength);
             }
             for (int i=0; i<p.inputDistributedLoads.Count; i++) {
                 addDistributedLoad(this, p.inputDistributedLoads[i], OxyColors.DeepSkyBlue,

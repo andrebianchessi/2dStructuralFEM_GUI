@@ -4,6 +4,9 @@
 # Add frame element:
 # addElement(frame, x1, y1, x2, y2, E, A, I)
 #
+# Add truss element:
+# addElement(frame, x1, y1, x2, y2, E, A)
+#
 # Add Boundary condition:
 # addBC(x, y, type, displacement)
 # addBC(x, y, type)
