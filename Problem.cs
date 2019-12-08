@@ -378,7 +378,7 @@ namespace _2dStructuralFEM_GUI {
             // max and min
             string s = "";
             s += "######################################### Max. and min. values ###########################################\n";
-            s += "Coordinate x_adim is the adimensional x coordinate in each element(x / element length)\n\n";
+            s += "Coordinate x_adim is the adimensional x coordinate in each element (x / element length)\n\n";
             s += "##### Max displacements #####\n";
             s += this.solution.max_absolute_x_nodal_displacement_node.str() + " dx: " + this.solution.max_absolute_x_nodal_displacement +"\n";
             s += this.solution.max_absolute_y_nodal_displacement_node.str() + " dy: " + this.solution.max_absolute_y_nodal_displacement + "\n";

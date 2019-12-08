@@ -354,6 +354,20 @@ namespace _2dStructuralFEM_GUI {
             this.calculating_text.Visibility = Visibility.Visible;
             this.calculating_text.Text = "Done!\nFinal structure with X and Y displacements multiplied by "+f+"\nHover mouse on red nodes to view results\n";
 
+            // verify forces sum
+            if (true) {
+                double xSum = 0;
+                double ySum = 0;
+                double zSum = 0;
+                foreach(Node n in Node.all) {
+                    xSum += p.solution.getNodeExternalForce(n, 'x');
+                    zSum += p.solution.getNodeExternalForce(n, 'y');
+                    zSum += p.solution.getNodeExternalForce(n, 'x');
+                }
+                p.outputText = "External nodal loads sum: \n X: " + xSum + "     Y: " + ySum + "     Z: " + zSum + "\n\n"+p.outputText;
+            }
+
+            // display text
             resultsWindow resultsWindowObj = new resultsWindow();
             resultsWindowObj.TextBox.Text = p.outputText;
             resultsWindowObj.Show();
