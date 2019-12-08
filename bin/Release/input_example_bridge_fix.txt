@@ -88,3 +88,6 @@ addBC(0, 0, xDisplacement,0)
 addBC(0, 0, yDisplacement,0)
 addBC(31.14, 0, xDisplacement,0)
 addBC(31.14, 0, yDisplacement,0)
+
+
+debug(true)

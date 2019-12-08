@@ -81,6 +81,7 @@ namespace _2dStructuralFEM_GUI {
             Node n1 = Node.getNode(x1, y1);
             Node n2 = Node.getNode(x2, y2);
 
+            // dsitributed load list to post process
             List<Load> distributedLoadList = new List<Load>();
             distributedLoadList.Add( new Load(n1,magnitude1,alpha1,radians:true,addToAll:false));
             distributedLoadList.Add( new Load(n2, magnitude2, alpha2, radians: true, addToAll: false));
@@ -111,12 +112,14 @@ namespace _2dStructuralFEM_GUI {
 
             Vector<double> globalForces = e.getGlobal(localForces);
 
-            new Load(n1, globalForces[0], 0, radians=false);
-            new Load(n1, globalForces[1], 90, radians = false);
+            new Load(n1, globalForces[0], 0, radians:false);
+            new Load(n1, globalForces[1], 90, radians:false);
             new Load(n1, globalForces[2]);
-            new Load(n2, globalForces[3], 0, radians = false);
-            new Load(n2, globalForces[4], 90, radians = false);
+            new Load(n2, globalForces[3], 0, radians : false);
+            new Load(n2, globalForces[4], 90, radians : false);
             new Load(n2, globalForces[5]);
+
+            Console.WriteLine(globalForces);
 
             for(int i=0; i<6; i++) {
                 e.distributedLoadsVector[i] += globalForces[i];

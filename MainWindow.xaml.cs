@@ -111,7 +111,7 @@ namespace _2dStructuralFEM_GUI {
                     s += this.BC_list_type[this.BC_list_nodes.IndexOf(l.node)] + "\n";
                 }
                 s += "Moment (z axis)=" + l.magnitude;
-                addNode(window, l.x, l.y, s, circleSize*0.7, color);
+                addNode(window, l.node.x, l.node.y, s, circleSize*0.7, color);
                 List<double> r = new List<double>();
                 r.Add(l.node.x);
                 r.Add(l.node.y);

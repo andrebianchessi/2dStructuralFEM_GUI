@@ -40,13 +40,16 @@ namespace _2dStructuralFEM_GUI {
 
             if (addToAll) {
                 Load.all.Add(this);
+                //Console.WriteLine("Add load with magnitude (x,y) (" + this.x + ", " + this.y + ") to (" + node.x + ", " + node.y+")");
+
             }
 
-            foreach(Element e in Element.all) {
+            foreach (Element e in Element.all) {
                 if( e.nodes.Contains(node) ){
                     this.elements.Add(e);
                 }
             }
+
         }
         /// <summary>
         /// Create moment
@@ -56,14 +59,15 @@ namespace _2dStructuralFEM_GUI {
             this.magnitude = magnitude;
             this.alpha = null;
 
-            this.x = node.x;
-            this.y = node.y;
+            this.x = 0;
+            this.y = 0;
             this.z = magnitude;
 
             this.elements = new List<Element>();
 
             if (addToAll) {
                 Load.all.Add(this);
+                //Console.WriteLine("Add moment with magnitude " + magnitude +" to " + node.x + ", " + node.y);
             }
 
             foreach (Element e in Element.all) {
