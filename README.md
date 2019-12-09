@@ -2,9 +2,11 @@
 2d Structural Finite Element Solver with Graphical Interface
 Problem is described by input .txt file
 
+To-do
+
 
 # Tutorial
-1) Launch /bin/Release/2dStructuralFEM_GUI.exe
+1) To use the software, download this repository as .zip. Copy everything inside /bin/Release/ to a folder where you want to use the software. Launch /bin/Release/2dStructuralFEM_GUI.exe
 2) Click "File"
 3) Select one of "input_example ... .txt" file
 - Structure will be displayed.
