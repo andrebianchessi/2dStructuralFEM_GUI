@@ -334,14 +334,41 @@ namespace _2dStructuralFEM_GUI {
                 f = 10000;
             }
             
-            double d=this.l*0.014; 
+            double d=this.l*0.014;
             // add lines
             for (int i = 0; i < Element.all.Count; i++) {
-                addLine(this,Element.all[i].node1.x + p.solution.getNodeGlobalDisplacement(Element.all[i].node1, 'x') * f + d*Math.Cos(Element.all[i].alpha),
-                        Element.all[i].node1.y + p.solution.getNodeGlobalDisplacement(Element.all[i].node1, 'y') * f + d * Math.Sin(Element.all[i].alpha),
-                        Element.all[i].node2.x + p.solution.getNodeGlobalDisplacement(Element.all[i].node2, 'x') * f - d * Math.Cos(Element.all[i].alpha),
-                        Element.all[i].node2.y + p.solution.getNodeGlobalDisplacement(Element.all[i].node2, 'y') * f - d * Math.Sin(Element.all[i].alpha),
-                        OxyColors.Red);
+                int dx1=0;
+                int dy1=0;
+                int dx2=0;
+                int dy2=0;
+                
+                if (Element.all[i].node1.x + p.solution.getNodeGlobalDisplacement(Element.all[i].node1, 'x') >
+                    p.solution.getNodeGlobalDisplacement(Element.all[i].node2, 'x')+Element.all[i].node2.x) {
+                    dx1 = -1;
+                    dx2 = 1;
+                }
+                if (Element.all[i].node1.x + p.solution.getNodeGlobalDisplacement(Element.all[i].node1, 'x') <
+                    p.solution.getNodeGlobalDisplacement(Element.all[i].node2, 'x') + Element.all[i].node2.x) {
+                    dx1 = 1;
+                    dx2 = -1;
+                }
+                if (Element.all[i].node1.y + p.solution.getNodeGlobalDisplacement(Element.all[i].node1, 'y') >
+                    p.solution.getNodeGlobalDisplacement(Element.all[i].node2, 'y') + Element.all[i].node2.y) {
+                    dy1 = -1;
+                    dy2 = 1;
+                }
+                if (Element.all[i].node1.y + p.solution.getNodeGlobalDisplacement(Element.all[i].node1, 'y') <
+                    p.solution.getNodeGlobalDisplacement(Element.all[i].node2, 'y') + Element.all[i].node2.y) {
+                    dy1 = 1;
+                    dy2 = -1;
+                }
+
+
+                addLine(this,Element.all[i].node1.x + p.solution.getNodeGlobalDisplacement(Element.all[i].node1, 'x') * f + dx1*Math.Abs(d*Math.Cos(Element.all[i].alpha)),
+                    Element.all[i].node1.y + p.solution.getNodeGlobalDisplacement(Element.all[i].node1, 'y') * f + dy1 * Math.Abs(d * Math.Sin(Element.all[i].alpha)),
+                    Element.all[i].node2.x + p.solution.getNodeGlobalDisplacement(Element.all[i].node2, 'x') * f + dx2 * Math.Abs(d * Math.Cos(Element.all[i].alpha)),
+                    Element.all[i].node2.y + p.solution.getNodeGlobalDisplacement(Element.all[i].node2, 'y') * f + dy2 * Math.Abs(d * Math.Sin(Element.all[i].alpha)),
+                    OxyColors.Red);
 
                 if (Element.all[i].node1.label == "") {
                     Element.all[i].node1.label = "dx="+p.solution.getNodeGlobalDisplacement(Element.all[i].node1, 'x') + "\n" +
