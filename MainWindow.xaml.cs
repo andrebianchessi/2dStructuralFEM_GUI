@@ -120,7 +120,7 @@ namespace _2dStructuralFEM_GUI {
             }
             else {
                 ArrowAnnotation arrow = new ArrowAnnotation() { };
-                arrow.HeadLength = window.l * 0.1;
+                arrow.HeadLength = 2;
                 arrow.StartPoint = new DataPoint(l.node.x, l.node.y);
 
                 arrow.EndPoint = new DataPoint(l.node.x+Math.Cos(Convert.ToDouble(l.alpha))*l.magnitude/maxLoadMagnitude*arrowUnitLength,
@@ -129,20 +129,18 @@ namespace _2dStructuralFEM_GUI {
 
                 arrow.Color = color;
 
-                double xOffset, yOffset;
-                xOffset = Math.Cos(Convert.ToDouble(l.alpha)) * l.magnitude / maxLoadMagnitude * arrowUnitLength + 0.03 * window.l;
-                yOffset = Math.Sin(Convert.ToDouble(l.alpha)) * l.magnitude / maxLoadMagnitude * arrowUnitLength + 0.03 * window.l;
+                double xOffset = 0, yOffset = 0;
 
                 if (l.alpha < 0) {
-                    l.alpha = 360 + l.alpha;
+                    l.alpha = misc.toRadians(360) + l.alpha;
                 }
 
                 double a = Convert.ToDouble(l.alpha);
                 if (misc.toRadians(90) < a && a < misc.toRadians(270)) {
-                    xOffset += -2*0.03 * window.l;
+                    xOffset = -2*0.01 * window.l;
                 }
                 if (misc.toRadians(180) < a && a <= misc.toRadians(360)) {
-                    yOffset += -2 * 0.03 * window.l;
+                    yOffset = -2 * 0.01 * window.l;
                 }
 
                 arrow.TextPosition = new DataPoint(l.node.x+xOffset,l.node.y+yOffset);
@@ -168,7 +166,7 @@ namespace _2dStructuralFEM_GUI {
 
             addLine(window, p1[0], p1[1], p2[0], p2[1], color);
         }
-        
+
         // Load input file
         private void MenuItem_Click(object sender, RoutedEventArgs e) {
             // Create new problem
@@ -187,7 +185,7 @@ namespace _2dStructuralFEM_GUI {
             openFileDialog.ShowDialog();
             string fileName;
             fileName = openFileDialog.FileName;
-            if(fileName == "") {
+            if (fileName == "") {
                 this.plotModel.Annotations.Clear();
                 this.plotModel.Series.Clear();
                 this.plotModel.InvalidatePlot(true);
@@ -208,7 +206,7 @@ namespace _2dStructuralFEM_GUI {
             ymin = Node.all[0].y;
             ymax = Node.all[0].y;
 
-            for(int i=0; i<Node.all.Count; i++) {
+            for (int i = 0; i < Node.all.Count; i++) {
                 if (Node.all[i].x < xmin) {
                     xmin = Node.all[i].x;
                 }
@@ -225,16 +223,16 @@ namespace _2dStructuralFEM_GUI {
 
             this.l = Math.Max(xmax - xmin, ymax - ymin);
 
-            
+
             // determine maxLoadMagnitude and arrowUnitLenght to scale loads
             double maxLoadMagnitude = 0;
-            double arrowUnitLength = 3.5;
+            double arrowUnitLength = this.l * 0.1;
             for (int i = 0; i < p.inputConcentratedLoads.Count; i++) {
                 if (p.inputConcentratedLoads[i].magnitude > maxLoadMagnitude && p.inputConcentratedLoads[i].alpha != null) {
                     maxLoadMagnitude = p.inputConcentratedLoads[i].magnitude;
                 }
             }
-            for (int i=0; i<p.inputDistributedLoads.Count; i++) {
+            for (int i = 0; i < p.inputDistributedLoads.Count; i++) {
                 if (p.inputDistributedLoads[i][0].magnitude > maxLoadMagnitude && p.inputDistributedLoads[i][0].alpha != null) {
                     maxLoadMagnitude = p.inputDistributedLoads[i][0].magnitude;
                 }
@@ -255,35 +253,38 @@ namespace _2dStructuralFEM_GUI {
 
             // add lines
             double d = this.l * 0.014;
-            Node lowX;
-            Node highX;
-            Node lowY;
-            Node highY;
+            int dx1;
+            int dy1;
+            int dx2;
+            int dy2;
             for (int i = 0; i < Element.all.Count; i++) {
-                if(Element.all[i].node1.x< Element.all[i].node2.x) {
-                    lowX = Element.all[i].node1;
-                    highX = Element.all[i].node2;
+                if(Element.all[i].node1.x>= Element.all[i].node2.x) {
+                    dx1 = -1;
+                    dx2 = 1;
                 }
                 else {
-                    lowX = Element.all[i].node2;
-                    highX = Element.all[i].node1;
+                    dx1 = 1;
+                    dx2 = -1;
                 }
-                if (Element.all[i].node1.y < Element.all[i].node2.y) {
-                    lowY = Element.all[i].node1;
-                    highY = Element.all[i].node2;
+                if (Element.all[i].node1.y >= Element.all[i].node2.y) {
+                    dy1 = -1;
+                    dy2 = 1;
                 }
                 else {
-                    lowY = Element.all[i].node2;
-                    highY = Element.all[i].node1;
+                    dy1 = 1;
+                    dy2 = -1;
                 }
 
-                addLine(this, lowX.x + d * Math.Cos(Element.all[i].alpha),
-                    lowY.y + d * Math.Sin(Element.all[i].alpha),
-                    highX.x - d * Math.Cos(Element.all[i].alpha),
-                    highY.y - d * Math.Sin(Element.all[i].alpha), OxyColors.Black);
+
+                addLine(this, Element.all[i].node1.x + dx1*Math.Abs(d * Math.Cos(Element.all[i].alpha)),
+                Element.all[i].node1.y + dy1*Math.Abs(d * Math.Sin(Element.all[i].alpha)),
+                Element.all[i].node2.x + dx2 * Math.Abs(d * Math.Cos(Element.all[i].alpha)),
+                Element.all[i].node2.y + dy2*Math.Abs(d * Math.Sin(Element.all[i].alpha)), OxyColors.Black);
                 addNode(this, Element.all[i].node1.x, Element.all[i].node1.y, "Node " + Element.all[i].node1.number + "\n",
                     5, OxyColors.Black);
+
             }
+
 
             // add BCs
             addBCs(this,5);

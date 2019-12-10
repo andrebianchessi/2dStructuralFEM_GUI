@@ -34,11 +34,12 @@
 # debug(true)
 
 addElement(frame, 0, 0, 570, 0, 205000, 442.96, 122811.92)
-addElement(frame, 570, 0, 444.28, -411.21, 205000, 442.96, 122811.92)
+addElement(frame, 570, 0, 444.28, -411.21, 205000, 442.96, 122811.92	)
 
-addForce(570,0,1000,-90)
+addForce(570,0,1000,-90, false)
 
-addBC(0,0,rollerX)
+addBC(0,0,xDisplacement,0)
+addBC(0,0,yDisplacement,0)
 addBC(444.28,-411.21, rollerX)
 
 
