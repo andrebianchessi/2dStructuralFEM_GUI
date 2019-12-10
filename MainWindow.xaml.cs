@@ -37,7 +37,7 @@ namespace _2dStructuralFEM_GUI {
     public MainWindow() {
             InitializeComponent();
 
-            this.plot.Model = new PlotModel(){ PlotType = PlotType.Cartesian }; ;
+            this.plot.Model = new PlotModel(){ PlotType = PlotType.Cartesian };
             this.plotModel = this.plot.Model;
 
             this.customController = new PlotController();
@@ -248,10 +248,10 @@ namespace _2dStructuralFEM_GUI {
 
             if (maxLoadMagnitude == 0) { maxLoadMagnitude = 1; }
 
-            this.plotModel.Axes[0].Maximum = (xmax + arrowUnitLength) * 1.05;
-            this.plotModel.Axes[0].Minimum = (xmin - arrowUnitLength) * 1.05;
-            this.plotModel.Axes[1].Maximum = (ymax + arrowUnitLength) * 1.05;
-            this.plotModel.Axes[1].Minimum = (ymin - arrowUnitLength) * 1.05;
+            this.plotModel.Axes[0].Maximum = xmax + this.l / 10.0;
+            this.plotModel.Axes[0].Minimum = xmin - this.l / 10.0;
+            this.plotModel.Axes[1].Maximum = ymax + this.l / 10.0;
+            this.plotModel.Axes[1].Minimum = ymin - this.l / 10.0;
 
             // add lines
             double d = this.l * 0.014;
