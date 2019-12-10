@@ -255,11 +255,32 @@ namespace _2dStructuralFEM_GUI {
 
             // add lines
             double d = this.l * 0.014;
+            Node lowX;
+            Node highX;
+            Node lowY;
+            Node highY;
             for (int i = 0; i < Element.all.Count; i++) {
-                addLine(this, Element.all[i].node1.x + d * Math.Cos(Element.all[i].alpha),
-                    Element.all[i].node1.y + d * Math.Sin(Element.all[i].alpha),
-                    Element.all[i].node2.x - d * Math.Cos(Element.all[i].alpha),
-                    Element.all[i].node2.y - d * Math.Sin(Element.all[i].alpha), OxyColors.Black);
+                if(Element.all[i].node1.x< Element.all[i].node2.x) {
+                    lowX = Element.all[i].node1;
+                    highX = Element.all[i].node2;
+                }
+                else {
+                    lowX = Element.all[i].node2;
+                    highX = Element.all[i].node1;
+                }
+                if (Element.all[i].node1.y < Element.all[i].node2.y) {
+                    lowY = Element.all[i].node1;
+                    highY = Element.all[i].node2;
+                }
+                else {
+                    lowY = Element.all[i].node2;
+                    highY = Element.all[i].node1;
+                }
+
+                addLine(this, lowX.x + d * Math.Cos(Element.all[i].alpha),
+                    lowY.y + d * Math.Sin(Element.all[i].alpha),
+                    highX.x - d * Math.Cos(Element.all[i].alpha),
+                    highY.y - d * Math.Sin(Element.all[i].alpha), OxyColors.Black);
                 addNode(this, Element.all[i].node1.x, Element.all[i].node1.y, "Node " + Element.all[i].node1.number + "\n",
                     5, OxyColors.Black);
             }
