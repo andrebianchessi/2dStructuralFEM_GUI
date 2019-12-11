@@ -34,22 +34,33 @@ Blank lines and lines starting with '#' are ignored
 Lines end with 'new line'
 
 Add frame element:
+
 addElement(frame, x1, y1, x2, y2, E, A, I)
 
 Add truss element:
+
 addElement(frame, x1, y1, x2, y2, E, A)
 
 Add Boundary condition:
+
 addBC(x, y, type, displacement)
+
 addBC(x, y, type)
+
 type: fix, rollerX, rollerY, pin, xDisplacement, yDisplacement, zDisplacement
 
 Add loads:
+
 Concentrated force  -> addForce(x, y, magnitude, alpha, radians)
+
 Distributed force   -> addForce(x1, y1, magnitude1, alpha1, x2, y2, magnitude2, alpha2, radians)
+
 Concentrated moment -> addMoment(double x, double y, double magnitude)
+
     radians = true -> alpha in radians
+    
     radians = false -> alpha in degrees
 
 Debug mode:
+
 debug(true)
