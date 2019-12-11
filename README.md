@@ -29,38 +29,38 @@ Deformed structure will be displayed and text output will pop-up containing:
 
 # Input file format
   
-Blank lines and lines starting with '#' are ignored
+-Blank lines and lines starting with '#' are ignored
 
-Lines end with 'new line'
+-Lines end with 'new line'
 
-Add frame element:
+-Add frame element:
 
-addElement(frame, x1, y1, x2, y2, E, A, I)
+    addElement(frame, x1, y1, x2, y2, E, A, I)
 
-Add truss element:
+-Add truss element:
 
-addElement(frame, x1, y1, x2, y2, E, A)
+    addElement(frame, x1, y1, x2, y2, E, A)
 
-Add Boundary condition:
+-Add Boundary condition:
 
-addBC(x, y, type, displacement)
+    addBC(x, y, type, displacement)
 
-addBC(x, y, type)
+    addBC(x, y, type)
 
-type: fix, rollerX, rollerY, pin, xDisplacement, yDisplacement, zDisplacement
+    type: fix, rollerX, rollerY, pin, xDisplacement, yDisplacement, zDisplacement
 
-Add loads:
+-Add loads:
 
-Concentrated force  -> addForce(x, y, magnitude, alpha, radians)
+    Concentrated force  -> addForce(x, y, magnitude, alpha, radians)
 
-Distributed force   -> addForce(x1, y1, magnitude1, alpha1, x2, y2, magnitude2, alpha2, radians)
+    Distributed force   -> addForce(x1, y1, magnitude1, alpha1, x2, y2, magnitude2, alpha2, radians)
 
-Concentrated moment -> addMoment(double x, double y, double magnitude)
+    Concentrated moment -> addMoment(double x, double y, double magnitude)
 
     radians = true -> alpha in radians
     
     radians = false -> alpha in degrees
 
-Debug mode:
+-Debug mode:
 
-debug(true)
+    debug(true)
