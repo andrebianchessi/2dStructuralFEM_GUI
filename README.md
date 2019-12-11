@@ -2,8 +2,9 @@
 2d Structural Finite Element Solver with Graphical Interface
 
 Suports:
--Frame (beam + truss) and truss elements
--Distributed and concentrated loads
+Frame (beam + truss) and truss elements
+
+Distributed and concentrated loads
 
 Problem is described by a .txt input file, and graphical interface displays the structure with the loads and boundary conditions applied.
 
