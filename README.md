@@ -30,6 +30,7 @@ Deformed structure will be displayed and text output will pop-up containing:
 # Input file format
   
 Blank lines and lines starting with '#' are ignored
+
 Lines end with 'new line'
 
 Add frame element:
