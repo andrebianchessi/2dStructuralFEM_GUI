@@ -22,6 +22,7 @@ Outputs nodal displacements, maximum forces and moments, and forces diagram data
 - Dark blue nodes represent boundary condition. Hover mouse on them to view type of boundary condition.
 - Light blue circles on nodes indicate concentrated moments. Hover mouse on them to view magnitude and direction.
 4) Click "Solve"
+
 Deformed structure will be displayed and text output will pop-up containing:
 - Sum of external forces and moments in each direction (they should all be zero).
 - Maximum displacements and forces and their corresponding nodes and elements.
