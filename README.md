@@ -20,7 +20,7 @@ Outputs nodal displacements, maximum forces and moments, and forces diagram data
 - Light blue arrows indicate concentrated loads.
 - 2 Light blue arrows connected indicate distributed load.
 - Dark blue nodes represent boundary condition. Hover mouse on them to view type of boundary condition.
-- Light blue circles on nodes indicate concentrated moments. Hover mouse on them to view magnitude and direction.
+- Light blue circles on nodes indicate concentrated moments. Hover mouse over them to view magnitude and direction.
 4) Click "Solve"
 
 Deformed structure will be displayed and text output will pop-up containing:
