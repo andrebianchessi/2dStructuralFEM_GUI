@@ -35,7 +35,7 @@
 
 # mm, kN, GPa
 
-addElement(frame, 0, 0, 325, 0, 0.18, 700, 145833)
+addElement(frame, 0.0012, 0, 325, 0, 0.18, 700, 145833)
 addElement(frame, 325, 0, 325, 90, 0.18, 700, 145833)
 addElement(frame, 325, 0, 415, 0, 0.18, 700, 145833)
 addElement(truss, 325, 90, 457, 134, 0.000262, 1)

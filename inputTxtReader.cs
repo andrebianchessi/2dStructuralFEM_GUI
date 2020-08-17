@@ -2,6 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Text;
+using System.Globalization;
 
 namespace _2dStructuralFEM_GUI {
     class inputTxtReader {
@@ -41,14 +42,14 @@ namespace _2dStructuralFEM_GUI {
                         line = line.Substring(11);
                         pars = line.Split(',');
                         if (pars[0] == "frame") {
-                            p.addElement(pars[0], Convert.ToDouble(pars[1]), Convert.ToDouble(pars[2]),
-                            Convert.ToDouble(pars[3]), Convert.ToDouble(pars[4]), Convert.ToDouble(pars[5]),
-                            Convert.ToDouble(pars[6]), Convert.ToDouble(pars[7]));
+                            p.addElement(pars[0], double.Parse(pars[1], CultureInfo.InvariantCulture), double.Parse(pars[2], CultureInfo.InvariantCulture),
+                            double.Parse(pars[3], CultureInfo.InvariantCulture), double.Parse(pars[4], CultureInfo.InvariantCulture), double.Parse(pars[5], CultureInfo.InvariantCulture),
+                            double.Parse(pars[6], CultureInfo.InvariantCulture), double.Parse(pars[7], CultureInfo.InvariantCulture));
                         }
                         if (pars[0] == "truss") {
-                            p.addElement(pars[0], Convert.ToDouble(pars[1]), Convert.ToDouble(pars[2]),
-                            Convert.ToDouble(pars[3]), Convert.ToDouble(pars[4]), Convert.ToDouble(pars[5]),
-                            Convert.ToDouble(pars[6]));
+                            p.addElement(pars[0], double.Parse(pars[1], CultureInfo.InvariantCulture), double.Parse(pars[2], CultureInfo.InvariantCulture),
+                            double.Parse(pars[3], CultureInfo.InvariantCulture), double.Parse(pars[4], CultureInfo.InvariantCulture), double.Parse(pars[5], CultureInfo.InvariantCulture),
+                            double.Parse(pars[6], CultureInfo.InvariantCulture));
                         }
                         line = "###############";
                     }
@@ -63,14 +64,14 @@ namespace _2dStructuralFEM_GUI {
                         if (pars[2] == "rollerX") { t = bcType.rollerX; }
                         if (pars[2] == "rollerY") { t = bcType.rollerY; }
                         if (pars[2] == "pin") { t = bcType.pin; }
-                        if (pars[2] == "xDisplacement") { t = bcType.xDisplacement; value = Convert.ToDouble(pars[3]); }
-                        if (pars[2] == "yDisplacement") { t = bcType.yDisplacement; value = Convert.ToDouble(pars[3]); }
-                        if (pars[2] == "zDisplacement") { t = bcType.zDisplacement; value = Convert.ToDouble(pars[3]); }
+                        if (pars[2] == "xDisplacement") { t = bcType.xDisplacement; value = double.Parse(pars[3], CultureInfo.InvariantCulture); }
+                        if (pars[2] == "yDisplacement") { t = bcType.yDisplacement; value = double.Parse(pars[3], CultureInfo.InvariantCulture); }
+                        if (pars[2] == "zDisplacement") { t = bcType.zDisplacement; value = double.Parse(pars[3], CultureInfo.InvariantCulture); }
                         if (pars.Length == 3) {
-                            p.addBC(Convert.ToDouble(pars[0]), Convert.ToDouble(pars[1]), t);
+                            p.addBC(double.Parse(pars[0], CultureInfo.InvariantCulture), double.Parse(pars[1], CultureInfo.InvariantCulture), t);
                         }
                         if (pars.Length == 4) {
-                            p.addBC(Convert.ToDouble(pars[0]), Convert.ToDouble(pars[1]), t, value);
+                            p.addBC(double.Parse(pars[0], CultureInfo.InvariantCulture), double.Parse(pars[1], CultureInfo.InvariantCulture), t, value);
                         }
                         line = "###############";
                     }
@@ -89,12 +90,12 @@ namespace _2dStructuralFEM_GUI {
                         }
 
                         if (pars.Length == 5) { // concentrated force
-                            p.addForce(Convert.ToDouble(pars[0]), Convert.ToDouble(pars[1]), Convert.ToDouble(pars[2]), Convert.ToDouble(pars[3]), rad);
+                            p.addForce(double.Parse(pars[0], CultureInfo.InvariantCulture), double.Parse(pars[1], CultureInfo.InvariantCulture), double.Parse(pars[2], CultureInfo.InvariantCulture), double.Parse(pars[3], CultureInfo.InvariantCulture), rad);
                         }
                         if (pars.Length == 9) { // distributed force
-                            p.addForce(Convert.ToDouble(pars[0]), Convert.ToDouble(pars[1]), Convert.ToDouble(pars[2]),
-                                       Convert.ToDouble(pars[3]), Convert.ToDouble(pars[4]), Convert.ToDouble(pars[5]),
-                                       Convert.ToDouble(pars[6]), Convert.ToDouble(pars[7]), rad);
+                            p.addForce(double.Parse(pars[0], CultureInfo.InvariantCulture), double.Parse(pars[1], CultureInfo.InvariantCulture), double.Parse(pars[2], CultureInfo.InvariantCulture),
+                                       double.Parse(pars[3], CultureInfo.InvariantCulture), double.Parse(pars[4], CultureInfo.InvariantCulture), double.Parse(pars[5], CultureInfo.InvariantCulture),
+                                       double.Parse(pars[6], CultureInfo.InvariantCulture), double.Parse(pars[7], CultureInfo.InvariantCulture), rad);
                         }
                         line = "###############";
                     }
@@ -102,7 +103,7 @@ namespace _2dStructuralFEM_GUI {
                     if (line.Substring(0, 10) == "addMoment(") {
                         line = line.Substring(10);
                         pars = line.Split(',');
-                        p.addMoment(Convert.ToDouble(pars[0]), Convert.ToDouble(pars[1]), Convert.ToDouble(pars[2]));
+                        p.addMoment(double.Parse(pars[0], CultureInfo.InvariantCulture), double.Parse(pars[1], CultureInfo.InvariantCulture), double.Parse(pars[2], CultureInfo.InvariantCulture));
                         line = "###############";
                     }
                     
