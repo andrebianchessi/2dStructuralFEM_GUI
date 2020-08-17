@@ -5,7 +5,7 @@
 # addElement(frame, x1, y1, x2, y2, E, A, I)
 #
 # Add truss element:
-# addElement(truss, x1, y1, x2, y2, E, A)
+# addElement(frame, x1, y1, x2, y2, E, A)
 #
 # Add Boundary condition:
 # addBC(x, y, type, displacement)
@@ -33,16 +33,14 @@
 # addBC(3.2, 0, fix)
 # debug(true)
 
-addElement(frame,0,-3,0,0,21000000,0.0225,0.0000421875)
-addElement(frame,0,0,0,3,21000000,0.0225,0.0000421875)
-addElement(frame,0,0,3.2,0,21000000,0.0225,0.0000421875)
+# mm, kN, GPa
 
-addForce(0,0,50000,0,false)
-addForce(0,0,8000,-90,3.2,0,8000,-90,false)
+addElement(truss, 0, 0, 1, 0, 0.262, 1)
 
-addBC(0,-3,fix)
-addBC(0,3,fix)
-addBC(3.2,0,fix)
+addForce(1, 0, 1, 0, false)
+
+addBC(0, 0, pin)
+addBC(1, 0, rollerX)
 
 
 debug(false)
