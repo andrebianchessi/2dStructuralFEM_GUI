@@ -52,6 +52,14 @@ namespace _2dStructuralFEM_GUI {
             new Element(type, n1, n2, E, A);
         }
 
+        // create spring element
+        public void addElement(string type, double x1, double y1, double x2, double y2, double s)
+        {
+            Node n1 = Node.getNode(x1, y1);
+            Node n2 = Node.getNode(x2, y2);
+            new Element(type, n1, n2, s);
+        }
+
         // create concentrated force
         public void addForce(double x, double y, double magnitude, double alpha, bool radians = false) {
             if (!radians) {

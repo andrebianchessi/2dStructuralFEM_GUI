@@ -51,6 +51,11 @@ namespace _2dStructuralFEM_GUI {
                             double.Parse(pars[3], CultureInfo.InvariantCulture), double.Parse(pars[4], CultureInfo.InvariantCulture), double.Parse(pars[5], CultureInfo.InvariantCulture),
                             double.Parse(pars[6], CultureInfo.InvariantCulture));
                         }
+                        if (pars[0] == "spring")
+                        {
+                            p.addElement(pars[0], double.Parse(pars[1], CultureInfo.InvariantCulture), double.Parse(pars[2], CultureInfo.InvariantCulture),
+                            double.Parse(pars[3], CultureInfo.InvariantCulture), double.Parse(pars[4], CultureInfo.InvariantCulture), double.Parse(pars[5], CultureInfo.InvariantCulture));
+                        }
                         line = "###############";
                     }
 

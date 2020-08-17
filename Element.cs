@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Permissions;
 using System.Text;
 using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra;
@@ -18,6 +19,7 @@ namespace _2dStructuralFEM_GUI {
         public double A;   // c.s. area
         public double I;   // c.s. moment of inertia
         public double l;   // length
+        public double s;   // spring stiffness
 
         public List<Node> nodes; // list of nodes that make this element
         public Vector<double> distributedLoadsVector;
@@ -66,6 +68,26 @@ namespace _2dStructuralFEM_GUI {
             this.nodes = new List<Node>() { node1, node2 };
 
             this.distributedLoadsVector = Vector<double>.Build.Dense(6);
+        }
+
+        // create spring element
+        public Element(string type, Node node1, Node node2, double s)
+        {
+            this.type = type;
+
+            this.node1 = node1;
+            this.node2 = node2;
+
+            this.s = s;
+
+            this.l = Math.Sqrt(Math.Pow((node2.y - node1.y), 2) + Math.Pow((node2.x - node1.x), 2));
+
+            this.alpha = Math.Atan((node2.y - node1.y) / (node2.x - node1.x));
+
+            Element.all.Add(this);
+            this.number = Element.all.Count;
+
+            this.nodes = new List<Node>() { node1, node2 };
         }
 
         /// <summary>
@@ -145,8 +167,21 @@ namespace _2dStructuralFEM_GUI {
 
             }
 
+            if (this.type == "spring")
+            {
 
-            return k;
+                k[0, 0] = this.s;
+                k[0, 3] = -this.s;
+                k[3, 0] = -this.s;
+                k[3, 3] = this.s;
+
+                k[2, 2] = 1;
+                k[5, 5] = 1;
+            }
+
+
+
+                return k;
         }
 
         /// <summary>
