@@ -197,7 +197,7 @@ namespace _2dStructuralFEM_GUI {
             this.plot.Visibility = Visibility.Visible;
             this.button.Visibility = Visibility.Visible;
             this.calculating_text.Visibility = Visibility.Visible;
-            this.calculating_text.Text = "Hover mouse on blue nodes to view boundary condition\n";
+            this.calculating_text.Text = "Black = Frame\tPurple = Truss\tOrange = Spring\t\nHover mouse on blue nodes to view boundary condition\n";
 
             // determine max X Y
             double xmin, xmax, ymin, ymax;
@@ -275,13 +275,22 @@ namespace _2dStructuralFEM_GUI {
                     dy2 = -1;
                 }
 
+                // Pick color
+                OxyPlot.OxyColor lineCol = OxyColors.Black;
+                if (Element.all[i].type == "spring"){
+                    lineCol = OxyColors.DarkOrange;
+                }
+                if (Element.all[i].type == "truss"){
+                    lineCol = OxyColors.DarkOrchid;
+                }
 
-                addLine(this, Element.all[i].node1.x + dx1*Math.Abs(d * Math.Cos(Element.all[i].alpha)),
-                Element.all[i].node1.y + dy1*Math.Abs(d * Math.Sin(Element.all[i].alpha)),
-                Element.all[i].node2.x + dx2 * Math.Abs(d * Math.Cos(Element.all[i].alpha)),
-                Element.all[i].node2.y + dy2*Math.Abs(d * Math.Sin(Element.all[i].alpha)), OxyColors.Black);
+                addLine(this, Element.all[i].node1.x + dx1 * Math.Abs(d * Math.Cos(Element.all[i].alpha)),
+                    Element.all[i].node1.y + dy1 * Math.Abs(d * Math.Sin(Element.all[i].alpha)),
+                    Element.all[i].node2.x + dx2 * Math.Abs(d * Math.Cos(Element.all[i].alpha)),
+                    Element.all[i].node2.y + dy2 * Math.Abs(d * Math.Sin(Element.all[i].alpha)), lineCol);
                 addNode(this, Element.all[i].node1.x, Element.all[i].node1.y, "Node " + Element.all[i].node1.number + "\n",
                     5, OxyColors.Black);
+
 
             }
 

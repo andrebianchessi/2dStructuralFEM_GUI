@@ -33,9 +33,9 @@
 # addBC(3.2, 0, fix)
 # debug(true)
 
-# mm, kN, GPa
+# m, N
 
-addElement(truss, 0, 0, 1, 0, 0.262, 1)
+addElement(spring, 0, 0, 1, 0, 2)
 
 addForce(1, 0, 1, 0, false)
 

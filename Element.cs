@@ -88,6 +88,8 @@ namespace _2dStructuralFEM_GUI {
             this.number = Element.all.Count;
 
             this.nodes = new List<Node>() { node1, node2 };
+
+            this.distributedLoadsVector = Vector<double>.Build.Dense(6);
         }
 
         /// <summary>
