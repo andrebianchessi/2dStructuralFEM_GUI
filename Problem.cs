@@ -376,7 +376,7 @@ namespace _2dStructuralFEM_GUI {
 
                 builder.Append("x_adim, Normal force, Shear force, Moment\n");
                 for(int j = 0; j<normal.Count; j++) {
-                    builder.Append(x_adim[j] + ", " + normal[j] + ", " + shear[j] + ", " +moment[j] +"\n");
+                    builder.Append(x_adim[j].ToString().Replace(',', '.') + ", " + normal[j].ToString().Replace(',','.') + ", " + shear[j].ToString().Replace(',', '.') + ", " +moment[j].ToString().Replace(',', '.') + "\n");
                 }
 
             
