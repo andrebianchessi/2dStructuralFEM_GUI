@@ -330,17 +330,17 @@ namespace _2dStructuralFEM_GUI {
             this.plotModel.Series.Clear();
             this.plotModel.Annotations.Clear();
 
-            double maxElementLengh = 0;
+            double minElementLengh = Element.all[0].l;
             for (int i=0; i<Element.all.Count; i++) {
-                if (Element.all[i].l > maxElementLengh) {
-                    maxElementLengh = Element.all[i].l;
+                if (Element.all[i].l < minElementLengh) {
+                    minElementLengh = Element.all[i].l;
                 }
             }
 
             double maxDisp = Math.Max(this.p.solution.max_absolute_x_nodal_displacement, this.p.solution.max_absolute_y_nodal_displacement);
-            double f = Math.Abs(Math.Round(0.05*maxElementLengh/maxDisp,2));// increase displacement factor
-            if (f > 10000) {
-                f = 10000;
+            double f = Math.Abs(Math.Round(0.05*minElementLengh/maxDisp,2));// increase displacement factor
+            if (f > 100) {
+                f = 100;
             }
             
             double d=this.l*0.014;

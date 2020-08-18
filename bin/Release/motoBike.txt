@@ -5,14 +5,12 @@
 # 1
 addElement(frame, 0, 0, 30, 0, 200, 444, 130250)
 # 2
-addElement(frame, 30, 0, 325, 0, 200, 444, 130250)
-# 12
-addElement(frame, 325, 0, 415, 0, 200, 444, 130250)
+addElement(frame, 30, 0, 415, 0, 200, 444, 130250)
 
 # 3
 addElement(frame, 30, 0, 325, 90, 200, 384, 81392)
 # 4
-addElement(frame, 325, 0, 325, 90, 200, 384, 81392)
+addElement(frame, 325, 90, 415, 0, 200, 384, 81392)
 
 # 5
 addElement(spring, 325, 90, 457.5, 134.234, 0.262)
@@ -21,6 +19,21 @@ addElement(spring, 325, 90, 457.5, 134.234, 0.262)
 addElement(frame, 415, 0, 535, 0, 200, 150, 31250)
 # 7
 addElement(frame, 415, 0, 475, 103.923, 200, 150, 31250)
+# 8
+addElement(frame, 535, 0, 475, 103.923, 200, 150, 31250)
 
+# 9
+addElement(frame, 475, 103.923, 457.5, 134.234, 200, 304, 73365)
+# 10
+addElement(frame,457.5, 134.234, 285, 433, 200, 304, 73365)
+# 11
+addElement(frame,285, 433, 835,433, 200, 304, 73365)
+
+
+addBC(0,0, rollerX)
+addBC(835,433, pin)
+
+
+addForce(285, 433, -2, 90, false)
 
 debug(false)
